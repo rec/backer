@@ -1,0 +1,27 @@
+target:
+source:
+
+database:
+  every: day
+  at: '4:23'
+  type: mysql
+  table: table
+  user: user
+  password: password
+
+rsync:
+  create: true
+  every: day
+  exclude: .git
+  at: '3:32'
+  flags: [--archive, -v]
+
+git:
+  name:
+  user:
+  remote:
+  init: true
+  all: true
+  window: 0.05
+  message: '%Y-%m-%dT%H:%M%SZ'
+  sleep: 1
