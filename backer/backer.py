@@ -14,7 +14,7 @@ def execute(*args):
 def observe(path, callback, sleep=1):
     """Call `callback` if any file recursively within `path` changes"""
     class Handler:
-        @staticmethoid
+        @staticmethod
         def dispatch(event):
             if not event.is_directory:
                 callback(event)

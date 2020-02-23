@@ -2,40 +2,38 @@
 The backer configuration combines .yml and .json files together
 to return a dictionary.
 
-If file names are provided on the command line, then these are used to configure
-the program, otherwise stdin is read
+If file names are provided on the command line, then these are used to
+configure the program, otherwise stdin is read.
 """
 
-from pathlib import Path
 import sys
 import yaml
 
 
-def get_configuration():
+def get_configuration(args=sys.argv[1:]):
     config = {}
-    args = sys.argv[1:]
 
-    if args:
-        files = [Path(a) for a in args]
-        missing = [f for f in files if not f.exists()]
-        if missing:
-            raise ValueError(' '.join(str(c) for f in missing) + "don't exist")
-        streams = [f.open() for f in files]
-    else:
-        streams = [sys.stdin]
+    for a in args or [sys.stdin]:
+        if isinstance(a, dict):
+            section = a
+        elif isinstance(a, str):
+            section = yaml.safe_load(open(a))
+        else:
+            section = yaml.safe_load(a)
 
-    for fp in streams:
-        for section_name, tasks in yaml.safe_load(fp).items():
+        for section_name, tasks in section.items():
+            tasks = tasks or {'0': None}
             default = DEFAULTS.get(section_name)
             if not default:
                 raise KeyError(section_name)
+
             section_config = config.setdefault(section_name, {})
-            for task_name, task in tasks.items():
+            for task_name, task in (tasks or {}).items():
                 task_config = section_config.setdefault(task_name, {})
                 if not task_config:
                     task_config.update(default)
 
-                for k, v in task.items():
+                for k, v in (task or {}).items():
                     if k not in task_config:
                         raise KeyError(k)
                     task_config[k] = v

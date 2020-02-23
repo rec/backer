@@ -27,8 +27,10 @@ def git(source, remotes, init, all, window, message, sleep):
             execute('git', 'add', *files)
 
             if '%' in message:
-                message = datetime.datetime.now().strftime(message)
-            execute('git', 'commit', '-am', message)
+                msg = datetime.datetime.now().strftime(message)
+            else:
+                msg = message
+            execute('git', 'commit', '-am', msg)
             for remote in remotes:
                 execute('git', 'push', remote)
 

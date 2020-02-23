@@ -1,8 +1,5 @@
 import backer
-import setuptools
-
 from setuptools import setup
-import backer
 
 _classifiers = [
     'Development Status :: 4 - Beta',
@@ -30,5 +27,5 @@ if __name__ == '__main__':
         license='MIT',
         classifiers=_classifiers,
         keywords=['backups'],
-#        scripts=['backer.py'],
+        # scripts=['backer.py'],
     )

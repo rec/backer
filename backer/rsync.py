@@ -45,7 +45,7 @@ def rsync(source, target, tasks):
         if create and not rsync_dir.exists():
             rsync()
 
-       backer.schedule(rsync, every, at)
+        backer.schedule(rsync, every, at)
 
     for name, desc in tasks.items():
         schedule_one(name, **desc)
