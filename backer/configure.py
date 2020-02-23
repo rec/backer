@@ -43,27 +43,27 @@ def get_configuration(args=sys.argv[1:]):
 
 DEFAULTS = {
     'git': {
-      'init': True,
-      'all': True,
-      'window': 0.05,
-      'message': '%Y-%m-%dT%H:%M%SZ',
-      'sleep': 1,
+        'init': True,
+        'all': True,
+        'window': 0.05,
+        'message': '%Y-%m-%dT%H:%M%SZ',
+        'sleep': 1,
     },
 
     'database': {
-      'every': 'day',
-      'at': '4:23',
-      'type': 'mysql',
-      'tables': None,
-      'user': 'user',
-      'password': 'password',
+        'every': 'day',
+        'at': '4:23',
+        'type': 'mysql',
+        'tables': None,
+        'user': 'user',
+        'password': 'password',
     },
 
     'rsync': {
-      'create': True,
-      'every': 'day',
-      'exclude': ('.git',),
-      'at': '3:32',
-      'flags': '--archive -v',
+        'create': True,
+        'every': 'day',
+        'exclude': ('.git',),
+        'at': '3:32',
+        'flags': '--archive -v',
     },
 }
