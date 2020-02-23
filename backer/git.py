@@ -1,11 +1,21 @@
-from .execute import execute
-from .observer import observe_path
+from .backer import execute, observe
 from pathlib import Path
 import datetime
 import os
 
 
-def git(source, name, user, remote, init, all, window, message, sleep):
+def git(source, remotes, init, all, window, message, sleep):
+    """"`git commit` automatically on any change within a directory.
+
+    Whenever any file changes within the `source` directory recursively,
+    attempt to make a git commit, and if this succeeds, push it to all remotes.
+
+    source:
+      source directory to be backed up
+
+    remotes:
+
+    """
     def commit_all():
         lines = execute('git', 'status', '--porcelain')
 
@@ -30,4 +40,4 @@ def git(source, name, user, remote, init, all, window, message, sleep):
                 execute('git', 'remote', 'add', name, remote)
         commit_all()
 
-    observe_path(callback, source, sleep)
+    observe(source, callback, sleep)

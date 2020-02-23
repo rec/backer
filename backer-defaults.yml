@@ -5,7 +5,7 @@ database:
   every: day
   at: '4:23'
   type: mysql
-  table: table
+  tables:
   user: user
   password: password
 
@@ -17,9 +17,6 @@ rsync:
   flags: [--archive, -v]
 
 git:
-  name:
-  user:
-  remote:
   init: true
   all: true
   window: 0.05
