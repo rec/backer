@@ -39,6 +39,7 @@ class TestConfig(TestCase):
         expected = {
             'target': 'foo',
             'source': None,
+            'dry_run': None,
             'rsync': {
                 'hourly': {
                     'at': '3:32',

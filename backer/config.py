@@ -21,10 +21,14 @@ def config(args=None):
     p.add_argument('target', default=None, nargs='?', help=_TARGET_HELP)
     p.add_argument('source', default=None, nargs='?', help=_SOURCE_HELP)
     p.add_argument('--config', '-c', nargs='+', help=_CONFIG_HELP)
+    p.add_argument(
+        '--dry-run', '-d', default=None, action='store_true', help=_DRY_HELP)
 
     result = p.parse_args(args)
     cfg = _combine_sections(result.config or [_get_default_config()])
-    cfg.update(target=result.target, source=result.source)
+
+    del result.config
+    cfg.update(vars(result))
     return cfg
 
 
@@ -79,7 +83,9 @@ def _get_default_config():
 
 
 _DESCRIPTION = 'Periodically back up a directory or database'
+_CONFIG_HELP = 'One or more JSON or Yaml configuration files'
+_DRY_HELP = (
+    'If set, print the final configuration and stop without backing up')
 _SOURCE_HELP = (
     'The source directory to back up from.  Default is the current directory.')
 _TARGET_HELP = 'The target directory to back up to.'
-_CONFIG_HELP = 'One or more JSON or Yaml configuration files'

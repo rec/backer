@@ -1,22 +1,22 @@
 from . import config, execute, tasks
-
-COMMON_CONFIGS = 'target', 'source'
+import yaml
 
 
 def main():
     cfg = config.config()
-    common = {k: cfg.pop(k) for k in COMMON_CONFIGS}
 
-    if not cfg:
-        raise ValueError('No configuration')
+    if cfg.pop('dry_run'):
+        print(yaml.safe_dump(cfg))
+        return
+
+    target = cfg.pop('target')
+    source = cfg.pop('source')
 
     for task_name, section in cfg.items():
         task = tasks.TASKS[task_name]
         for name, desc in section.items():
-            for k, v in common.items():
-                if k not in section:
-                    section[k] = v
-
+            desc['target'] = desc['target'] or target
+            desc['source'] = desc['source'] or source
             task(name, **desc)
 
     execute.start()
