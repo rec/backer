@@ -1,7 +1,10 @@
 import schedule as _schedule
 import subprocess
+import threading
 import time
 import watchdog
+
+_OBSERVER = None
 
 
 def run(*args, **kwds):
@@ -13,27 +16,20 @@ def run(*args, **kwds):
 
 def observe(path, callback, sleep=1):
     """Call `callback` if any file recursively within `path` changes"""
+    global _OBSERVER
+    _OBSERVER = _OBSERVER or watchdog.Observer()
+
     class Handler:
         @staticmethod
         def dispatch(event):
             if not event.is_directory:
                 callback(event)
 
-    o = watchdog.Observer()
-    o.schedule(Handler(path), path, recursive=True)
-    o.start()
-
-    try:
-        while True:
-            time.sleep(sleep)
-    except KeyboardInterrupt:
-        o.stop()
-    o.join()
+    _OBSERVER.schedule(Handler(path), path, recursive=True)
 
 
 def schedule(func, every, at=None):
     """Schedule a function"""
-
     if '@' in every:
         if at:
             raise ValueError('Cannot use @ and at: at the same time')
@@ -46,3 +42,17 @@ def schedule(func, every, at=None):
             scheduler = scheduler.at('0' + at)
 
     return scheduler.at(at).do(func)
+
+
+def start(sleep=1):
+    """Start scheduling and observing, if necessary"""
+    if _OBSERVER:
+        _OBSERVER.start()
+
+    if _schedule.jobs:
+        def loop():
+            while True:
+                _schedule.run_pending()
+                time.sleep(sleep)
+
+        threading.Thread(target=loop, daemon=True).start()
