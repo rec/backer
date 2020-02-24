@@ -6,21 +6,20 @@ If file names are provided on the command line, then these are used to
 configure the program, otherwise stdin is read.
 """
 
-import sys
+from . tasks import DEFAULTS
+from pathlib import Path
+import argparse
 import yaml
 
+STEM = Path('backer')
+SUFFIXES = '.yml', '.yaml', '.json'
 
-def get_configuration(args=sys.argv[1:]):
+
+def combine_sections(sections):
     config = {}
 
-    for a in args or [sys.stdin]:
-        if isinstance(a, dict):
-            section = a
-        elif isinstance(a, str):
-            section = yaml.safe_load(open(a))
-        else:
-            section = yaml.safe_load(a)
-
+    for section in sections:
+        section = read_config(section)
         for section_name, tasks in section.items():
             tasks = tasks or {'0': None}
             default = DEFAULTS.get(section_name)
@@ -41,29 +40,45 @@ def get_configuration(args=sys.argv[1:]):
     return config
 
 
-DEFAULTS = {
-    'git': {
-        'init': True,
-        'all': True,
-        'window': 0.05,
-        'message': '%Y-%m-%dT%H:%M%SZ',
-        'sleep': 1,
-    },
+def read_config(file_or_config):
+    if isinstance(file_or_config, dict):
+        return file_or_config
 
-    'database': {
-        'every': 'day',
-        'at': '4:23',
-        'type': 'mysql',
-        'tables': None,
-        'user': 'user',
-        'password': 'password',
-    },
+    p = Path(file_or_config)
+    if p.exists():
+        return yaml.safe_load(p.open())
 
-    'rsync': {
-        'create': True,
-        'every': 'day',
-        'exclude': ('.git',),
-        'at': '3:32',
-        'flags': '--archive -v',
-    },
-}
+    try:
+        return yaml.safe_load(file_or_config)
+    except Exception:
+        pass
+
+    raise ValueError('Cannot understand config ' + file_or_config)
+
+
+def get_default_config():
+    for s in SUFFIXES:
+        path = STEM.with_suffix(s)
+        if path.exists():
+            return path
+    raise ValueError('No configuration file found')
+
+
+def parse(args=None):
+    p = argparse.ArgumentParser(description=_DESCRIPTION)
+
+    p.add_argument('target', default=None, nargs='?', help=_TARGET_HELP)
+    p.add_argument('source', default=None, nargs='?', help=_SOURCE_HELP)
+    p.add_argument('--config', '-c', nargs='+', help=_CONFIG_HELP)
+
+    result = p.parse_args(args)
+    config = combine_sections(result.config or [get_default_config()])
+
+    return result.target, result.source, config
+
+
+_DESCRIPTION = 'Periodically back up a directory or database'
+_SOURCE_HELP = (
+    'The source directory to back up from.  Default is the current directory.')
+_TARGET_HELP = 'The target directory to back up to.'
+_CONFIG_HELP = 'One or more JSON or Yaml configuration files'

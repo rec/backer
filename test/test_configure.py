@@ -1,18 +1,16 @@
 from unittest import TestCase
 from backer import configure
-from io import StringIO
-
-
-def get_configuration(*strings):
-    return configure.get_configuration([StringIO(s) for s in strings])
 
 
 class TestConfigure(TestCase):
     def test_simple(self):
-        actual = get_configuration('git:')
+        actual = configure.combine_sections(['git:'])
         expected = {
             'git': {
                 '0': {
+                    'source': None,
+                    'target': None,
+                    'remotes': None,
                     'all': True,
                     'init': True,
                     'message': '%Y-%m-%dT%H:%M%SZ',
@@ -21,10 +19,33 @@ class TestConfigure(TestCase):
         assert expected == actual
 
     def test_all(self):
-        actual = get_configuration('git:\nrsync:\ndatabase:')
+        actual = configure.combine_sections(['git:\nrsync:\ndatabase:'])
         expected = {k: {'0': v} for k, v in configure.DEFAULTS.items()}
         assert expected == actual
 
         # Make sure they aren't the same
         actual['git'] = {}
         assert configure.DEFAULTS != actual
+
+    def test_parts(self):
+        actual = configure.combine_sections(['git:', 'rsync:', 'database:'])
+        expected = {k: {'0': v} for k, v in configure.DEFAULTS.items()}
+        assert expected == actual
+
+    def test_parse(self):
+        cfg = 'rsync: {hourly: {every: hour}}'
+        target, source, config = configure.parse(['foo', '-c', cfg])
+        assert target == 'foo'
+        assert source is None
+        expected = {
+            'rsync': {
+                'hourly': {
+                    'at': '3:32',
+                    'create': True,
+                    'every': 'hour',
+                    'exclude': ('.git',),
+                    'flags': '--archive -v',
+                    'source': None,
+                    'target': None}}}
+
+        assert config == expected

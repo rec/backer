@@ -4,9 +4,9 @@ import time
 import watchdog
 
 
-def execute(*args):
+def execute(*args, **kwds):
     print('$', *args)
-    result = subprocess.check_output(args, encoding='utf-8')
+    result = subprocess.check_output(args, encoding='utf-8', **kwds)
     print(result)
     return [i.rstrip() for i in result.splitlines()]
 
