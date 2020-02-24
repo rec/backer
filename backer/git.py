@@ -1,4 +1,4 @@
-from .backer import execute, observe
+from . import execute
 from pathlib import Path
 from queue import Queue, Empty
 import datetime
@@ -33,7 +33,7 @@ def run(name, source=None, target=None,
       A dictionary mapping remote names to remote URLs
     """
     queue = Queue()
-    git = functools.partial(execute, 'git', cwd=source)
+    git = functools.partial(execute.run, 'git', cwd=source)
     remotes = remotes or {}
 
     def clear_queue():
@@ -81,4 +81,4 @@ def run(name, source=None, target=None,
 
     threading.Thread(target=service_queue, daemon=True).start()
     initialize()
-    observe(source, queue.put, sleep)
+    execute.observe(source, queue.put, sleep)

@@ -4,7 +4,7 @@ import time
 import watchdog
 
 
-def execute(*args, **kwds):
+def run(*args, **kwds):
     print('$', *args)
     result = subprocess.check_output(args, encoding='utf-8', **kwds)
     print(result)

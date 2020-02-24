@@ -1,4 +1,4 @@
-from . import backer
+from . import execute
 from pathlib import Path
 
 
@@ -38,12 +38,12 @@ def run(name, source=None, target=None,
     rsync_dir = Path(target) / name
 
     def rsync():
-        return backer.execute('rsync', *flags, source, rsync_dir)
+        return execute.run('rsync', *flags, source, rsync_dir)
 
     if create and not rsync_dir.exists():
         rsync()
 
-    backer.schedule(rsync, every, at)
+    execute.run(rsync, every, at)
 
 
 DEFAULT = {
