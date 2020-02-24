@@ -15,11 +15,24 @@ STEM = Path('backer')
 SUFFIXES = '.yml', '.yaml', '.json'
 
 
-def combine_sections(sections):
+def config(args=None):
+    p = argparse.ArgumentParser(description=_DESCRIPTION)
+
+    p.add_argument('target', default=None, nargs='?', help=_TARGET_HELP)
+    p.add_argument('source', default=None, nargs='?', help=_SOURCE_HELP)
+    p.add_argument('--config', '-c', nargs='+', help=_CONFIG_HELP)
+
+    result = p.parse_args(args)
+    cfg = _combine_sections(result.config or [_get_default_config()])
+    cfg.update(target=result.target, source=result.source)
+    return cfg
+
+
+def _combine_sections(sections):
     config = {}
 
     for section in sections:
-        section = read_config(section)
+        section = _read_config(section)
         for section_name, tasks in section.items():
             tasks = tasks or {'0': None}
             default = DEFAULTS.get(section_name)
@@ -40,7 +53,7 @@ def combine_sections(sections):
     return config
 
 
-def read_config(file_or_config):
+def _read_config(file_or_config):
     if isinstance(file_or_config, dict):
         return file_or_config
 
@@ -56,25 +69,13 @@ def read_config(file_or_config):
     raise ValueError('Cannot understand config ' + file_or_config)
 
 
-def get_default_config():
+def _get_default_config():
     for s in SUFFIXES:
         path = STEM.with_suffix(s)
         if path.exists():
             return path
+
     raise ValueError('No configuration file found')
-
-
-def parse(args=None):
-    p = argparse.ArgumentParser(description=_DESCRIPTION)
-
-    p.add_argument('target', default=None, nargs='?', help=_TARGET_HELP)
-    p.add_argument('source', default=None, nargs='?', help=_SOURCE_HELP)
-    p.add_argument('--config', '-c', nargs='+', help=_CONFIG_HELP)
-
-    result = p.parse_args(args)
-    config = combine_sections(result.config or [get_default_config()])
-
-    return result.target, result.source, config
 
 
 _DESCRIPTION = 'Periodically back up a directory or database'
