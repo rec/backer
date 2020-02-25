@@ -4,59 +4,54 @@ import threading
 import time
 import watchdog
 
-_OBSERVER = None
-_SCHEDULE = None
 
+class Execute:
+    _observer = _schedule = None
 
-def run(*args, **kwds):
-    print('$', *args)
-    result = subprocess.check_output(args, encoding='utf-8', **kwds)
-    print(result)
-    return [i.rstrip() for i in result.splitlines()]
+    def run(self, *args, **kwds):
+        print('$', *args)
+        result = subprocess.check_output(args, encoding='utf-8', **kwds)
+        print(result)
+        return [i.rstrip() for i in result.splitlines()]
 
+    def observe(self, callback, path):
+        """Call `callback` if any file recursively within `path` changes"""
+        self._observer = self._observer or watchdog.Observer()
 
-def observe(path, callback):
-    """Call `callback` if any file recursively within `path` changes"""
-    global _OBSERVER
-    _OBSERVER = _OBSERVER or watchdog.Observer()
+        class Handler:
+            @staticmethod
+            def dispatch(event):
+                if not event.is_directory:
+                    callback(event)
 
-    class Handler:
-        @staticmethod
-        def dispatch(event):
-            if not event.is_directory:
-                callback(event)
+        self._observer.schedule(Handler(path), path, recursive=True)
 
-    _OBSERVER.schedule(Handler(path), path, recursive=True)
+    def schedule(self, callback, every, at=None):
+        """Schedule a function"""
+        self._schedule = self._schedule or _schedule.Schedule()
 
+        if '@' in every:
+            if at:
+                raise ValueError('Cannot use @ and at: at the same time')
+            every, at = every.split('@')
 
-def schedule(func, every, at=None):
-    """Schedule a function"""
-    global _SCHEDULE
-    _SCHEDULE = _SCHEDULE or _schedule.Schedule()
-
-    if '@' in every:
+        scheduler = getattr(self._schedule.every(), every)
         if at:
-            raise ValueError('Cannot use @ and at: at the same time')
-        every, at = every.split('@')
+            # Rewrite 4:32 to 04:32
+            if len(at.split(':')[0]) < 2:
+                scheduler = scheduler.at('0' + at)
 
-    scheduler = getattr(_SCHEDULE.every(), every)
-    if at:
-        # Rewrite 4:32 to 04:32
-        if len(at.split(':')[0]) < 2:
-            scheduler = scheduler.at('0' + at)
+        scheduler.at(at).do(callback)
 
-    scheduler.at(at).do(func)
+    def start(self, sleep=1):
+        """Start scheduling and observing, if necessary"""
+        if self._observer:
+            self._observer.start()
 
+        if self._schedule:
+            def loop():
+                while True:
+                    self._schedule.run_pending()
+                    time.sleep(sleep)
 
-def start(sleep=1):
-    """Start scheduling and observing, if necessary"""
-    if _OBSERVER:
-        _OBSERVER.start()
-
-    if _SCHEDULE:
-        def loop():
-            while True:
-                _SCHEDULE.run_pending()
-                time.sleep(sleep)
-
-        threading.Thread(target=loop, daemon=True).start()
+            threading.Thread(target=loop, daemon=True).start()

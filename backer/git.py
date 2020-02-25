@@ -1,4 +1,3 @@
-from . import execute
 from pathlib import Path
 from queue import Queue, Empty
 import datetime
@@ -7,7 +6,7 @@ import threading
 import time
 
 
-def run(name, target=None, source=None,
+def run(execute, name, target=None, source=None,
         remotes=None,
         git_init=True,
         add_unknown_files=True,
@@ -93,4 +92,4 @@ def run(name, target=None, source=None,
 
     threading.Thread(target=service_queue, daemon=True).start()
     initialize()
-    execute.observe(source, queue.put)
+    execute.observe(queue.put, source)

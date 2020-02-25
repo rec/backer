@@ -1,7 +1,7 @@
-from . import execute
+# Stub
 
 
-def run(name, target=None, source=None,
+def run(execute, name, target=None, source=None,
         every='day',
         at='4:32',
         type='mysql',

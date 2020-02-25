@@ -1,8 +1,7 @@
-from . import execute
 from pathlib import Path
 
 
-def run(name, target=None, source=None,
+def run(execute, name, target=None, source=None,
         every='day',
         at='3:32',
         exclude_files=('.git',),

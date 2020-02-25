@@ -1,9 +1,11 @@
-from . import config, execute, tasks
+from . import config, tasks
+from . execute import Execute
 import yaml
 
 
 def main(args=None, print=print):
     cfg = config.config(args)
+    execute = Execute()
 
     if cfg.pop('dry_run'):
         print(yaml.safe_dump(cfg))
@@ -17,7 +19,7 @@ def main(args=None, print=print):
         for name, desc in section.items():
             desc['target'] = desc['target'] or target
             desc['source'] = desc['source'] or source
-            task.run(name, **desc)
+            task.run(execute, name, **desc)
 
     execute.start()
 
