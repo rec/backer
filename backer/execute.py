@@ -5,6 +5,7 @@ import time
 import watchdog
 
 _OBSERVER = None
+_SCHEDULE = None
 
 
 def run(*args, **kwds):
@@ -30,18 +31,21 @@ def observe(path, callback, sleep=1):
 
 def schedule(func, every, at=None):
     """Schedule a function"""
+    global _SCHEDULE
+    _SCHEDULE = _SCHEDULE or _schedule.Schedule()
+
     if '@' in every:
         if at:
             raise ValueError('Cannot use @ and at: at the same time')
         every, at = every.split('@')
 
-    scheduler = getattr(_schedule.every(), every)
+    scheduler = getattr(_SCHEDULE.every(), every)
     if at:
         # Rewrite 4:32 to 04:32
         if len(at.split(':')[0]) < 2:
             scheduler = scheduler.at('0' + at)
 
-    return scheduler.at(at).do(func)
+    scheduler.at(at).do(func)
 
 
 def start(sleep=1):
@@ -49,10 +53,10 @@ def start(sleep=1):
     if _OBSERVER:
         _OBSERVER.start()
 
-    if _schedule.jobs:
+    if _SCHEDULE:
         def loop():
             while True:
-                _schedule.run_pending()
+                _SCHEDULE.run_pending()
                 time.sleep(sleep)
 
         threading.Thread(target=loop, daemon=True).start()

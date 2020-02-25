@@ -35,6 +35,7 @@ def run(name, source=None, target=None,
     queue = Queue()
     git = functools.partial(execute.run, 'git', cwd=source)
     remotes = remotes or {}
+    source = source or '.'
 
     def clear_queue():
         had_items = False

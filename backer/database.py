@@ -1,4 +1,4 @@
-# Stub for database TBA
+from . import execute
 
 
 def run(name, source=None, target=None,
@@ -8,4 +8,4 @@ def run(name, source=None, target=None,
         tables=None,
         user='user',
         password='password'):
-    pass
+    execute.run('something')
