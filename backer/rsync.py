@@ -2,28 +2,32 @@ from . import execute
 from pathlib import Path
 
 
-def run(name, source=None, target=None,
+def run(name, target=None, source=None,
         every='day',
         at='3:32',
-        exclude=('.git',),
+        exclude_files=('.git',),
         flags='--archive -v',
-        create=True):
+        create_if_missing=True):
     """Schedule rsync tasks.
 
     source:
-        The directory to be backed up
+        The directory to back up - default is the current working directory
 
     target:
-        The root directory for rsync backups:
+        The root directory for rsync backups
 
     every, at:
         When to schedule this rsync
 
-    exclude (default '.git'):
+    exclude_files:
         A list of files or directories to exclude.
 
     flags:
-         command line flags to rsync (default '--archive', '-v')
+        Command line flags to rsync
+
+    create_if_missing:
+        If True, immediately create an rsync backup if there is none,
+        otherwise wait until the scheduled time for the first backup
 
     """
     if isinstance(flags, str):
@@ -31,16 +35,15 @@ def run(name, source=None, target=None,
     elif not isinstance(flags, list):
         flags = list(flags)
 
-    if isinstance(exclude, str):
-        exclude = [exclude]
-    flags.extend('--exclude=' + e for e in exclude or [])
+    ex = [exclude_files] if isinstance(exclude_files, str) else exclude_files
+    flags.extend('--exclude=' + e for e in ex or [])
 
     rsync_dir = Path(target) / name
 
     def rsync():
         return execute.run('rsync', *flags, source, rsync_dir)
 
-    if create and not rsync_dir.exists():
+    if create_if_missing and not rsync_dir.exists():
         rsync()
 
     execute.run(rsync, every, at)

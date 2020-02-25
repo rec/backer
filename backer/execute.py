@@ -15,7 +15,7 @@ def run(*args, **kwds):
     return [i.rstrip() for i in result.splitlines()]
 
 
-def observe(path, callback, sleep=1):
+def observe(path, callback):
     """Call `callback` if any file recursively within `path` changes"""
     global _OBSERVER
     _OBSERVER = _OBSERVER or watchdog.Observer()

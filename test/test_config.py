@@ -11,11 +11,10 @@ class TestConfig(TestCase):
                     'source': None,
                     'target': None,
                     'remotes': None,
-                    'all': True,
-                    'init': True,
-                    'message': '%Y-%m-%dT%H:%M%SZ',
-                    'sleep': 1,
-                    'window': 0.05}}}
+                    'add_unknown_files': True,
+                    'git_init': True,
+                    'commit_message': '%Y-%m-%dT%H:%M%SZ',
+                    'file_event_window': 0.05}}}
         assert expected == actual
 
     def test_all(self):
@@ -43,9 +42,9 @@ class TestConfig(TestCase):
             'rsync': {
                 'hourly': {
                     'at': '3:32',
-                    'create': True,
+                    'create_if_missing': True,
                     'every': 'hour',
-                    'exclude': ('.git',),
+                    'exclude_files': ('.git',),
                     'flags': '--archive -v',
                     'source': None,
                     'target': None}}}

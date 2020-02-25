@@ -1,7 +1,7 @@
 from . import execute
 
 
-def run(name, source=None, target=None,
+def run(name, target=None, source=None,
         every='day',
         at='4:32',
         type='mysql',

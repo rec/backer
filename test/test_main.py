@@ -35,13 +35,12 @@ class TestMain(TestCase):
 DRY_RUN = yaml.safe_load("""
 git:
   '0':
-    all: true
-    init: true
-    message: '%Y-%m-%dT%H:%M%SZ'
+    add_unknown_files: true
+    git_init: true
+    commit_message: '%Y-%m-%dT%H:%M%SZ'
     remotes: null
-    sleep: 1
     source: null
     target: null
-    window: 0.05
+    file_event_window: 0.05
 source: null
 target: null""")
