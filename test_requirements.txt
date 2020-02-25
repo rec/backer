@@ -1,5 +1,6 @@
 coverage
 flake8
-phue
+import_all
+gitz
 pytest
 pytest-benchmark
