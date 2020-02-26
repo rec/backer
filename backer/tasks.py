@@ -1,10 +1,10 @@
-from . import database, git, rsync
+from . import git
 import inspect
 
 
 def _make():
     tasks, defaults = {}, {}
-    for module in database, git, rsync:
+    for module in (git,):
         name = module.__name__.split('.')[-1]
         tasks[name] = module
 
