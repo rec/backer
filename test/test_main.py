@@ -4,4 +4,4 @@ import unittest
 
 class TestMockMain(unittest.TestCase):
     def test_git(self):
-        main(('-c', 'git:'))
+        main()

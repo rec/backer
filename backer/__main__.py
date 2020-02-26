@@ -5,10 +5,9 @@ from pathlib import Path
 from queue import Queue, Empty
 import os
 
-OBSERVER = Observer()
 
-
-def run_git():
+def main():
+    observer = Observer()
     queue = Queue()
     source = Path(os.path.expandvars('.')).expanduser().resolve()
 
@@ -27,24 +26,15 @@ def run_git():
                 items_in_queue()
 
     threading.Thread(target=service_queue, daemon=True).start()
-    observe(queue.put, source.absolute())
-
-
-def observe(callback, path):
-    """Call `callback` if any file recursively within `path` changes"""
 
     class Handler:
         @staticmethod
         def dispatch(event):
             if not event.is_directory:
-                callback(event)
+                queue.event(event)
 
-    OBSERVER.schedule(Handler(), path, recursive=True)
-
-
-def main(args=None):
-    run_git()
-    OBSERVER.start()
+    observer.schedule(Handler(), source, recursive=True)
+    observer.start()
 
 
 if __name__ == '__main__':
