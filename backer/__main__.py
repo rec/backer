@@ -1,4 +1,3 @@
-import subprocess
 import threading
 import time
 from watchdog.observers import Observer
@@ -6,8 +5,10 @@ from pathlib import Path
 from queue import Queue, Empty
 import os
 
+OBSERVER = Observer()
 
-def run_git(execute):
+
+def run_git():
     queue = Queue()
     source = Path(os.path.expandvars('.')).expanduser().resolve()
 
@@ -26,40 +27,24 @@ def run_git(execute):
                 items_in_queue()
 
     threading.Thread(target=service_queue, daemon=True).start()
-    execute.observe(queue.put, source.absolute())
+    observe(queue.put, source.absolute())
 
 
-class Execute:
-    _observer = _schedule = None
+def observe(callback, path):
+    """Call `callback` if any file recursively within `path` changes"""
 
-    def run(self, *args, **kwds):
-        print('$', *args)
-        result = subprocess.check_output(args, encoding='utf-8', **kwds)
-        print(result)
-        return [i.rstrip() for i in result.splitlines()]
+    class Handler:
+        @staticmethod
+        def dispatch(event):
+            if not event.is_directory:
+                callback(event)
 
-    def observe(self, callback, path):
-        """Call `callback` if any file recursively within `path` changes"""
-        self._observer = self._observer or Observer()
-
-        class Handler:
-            @staticmethod
-            def dispatch(event):
-                if not event.is_directory:
-                    callback(event)
-
-        self._observer.schedule(Handler(), path, recursive=True)
-
-    def start(self, sleep=1):
-        """Start scheduling and observing, if necessary"""
-        if self._observer:
-            self._observer.start()
+    OBSERVER.schedule(Handler(), path, recursive=True)
 
 
 def main(args=None):
-    execute = Execute()
-    run_git(execute)
-    execute.start()
+    run_git()
+    OBSERVER.start()
 
 
 if __name__ == '__main__':
