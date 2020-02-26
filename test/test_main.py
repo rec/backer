@@ -1,34 +1,44 @@
-from unittest import TestCase, mock
 from backer.__main__ import main
+from backer import execute
+from gitz.git import GIT, repo
+
+import time
+import unittest
 import yaml
 
 CLASSES = '__main__', 'git', 'rsync', 'database'
 PATCHES = ['backer.%s.execute' % c for c in CLASSES]
 
 
-@mock.patch('backer.execute.Execute.run', autospec=True)
-@mock.patch('backer.execute.Execute.observe', autospec=True)
-@mock.patch('backer.execute.Execute.schedule', autospec=True)
-@mock.patch('backer.execute.Execute.start', autospec=True)
-class TestMain(TestCase):
-    def test_dry_run(self, start, schedule, observe, run):
-        result = []
-        main(['-d', '-c', 'git:'], print=result.append)
-        assert yaml.safe_load(result[0]) == DRY_RUN
-        assert start.method_calls == []
-        assert schedule.method_calls == []
-        assert run.method_calls == []
-        assert observe.method_calls == []
+class FakeExecute(execute.Execute):
+    def observe(self, callback, path):
+        self.callback = callback
 
-    def test_git(self, start, schedule, observe, run):
-        result = []
-        main(['-c', 'git:'], print=result.append)
-        assert result == []
 
-        start.assert_called_once()
-        schedule.assert_not_called()
-        run.assert_not_called()
-        observe.assert_called_once()
+def pause():
+    time.sleep(0.1)
+
+
+class TestMockMain(unittest.TestCase):
+    def setUp(self):
+        self.execute = FakeExecute()
+        self.result = []
+
+    def main(self, *args):
+        main(args, self.result.append, self.execute)
+
+    def test_dry_run(self):
+        self.main('-d', '-c', 'git:')
+        assert yaml.safe_load(self.result[0]) == DRY_RUN
+
+    @repo.test
+    def test_git(self):
+        self.main('-c', 'git:')
+        repo.write_files('a', 'b', 'c')
+        self.execute.callback(None)
+        pause()
+        files = GIT.diff_tree('--no-commit-id', '--name-only', '-r', 'HEAD')
+        assert set(files) == set('abc')
 
 
 DRY_RUN = yaml.safe_load("""

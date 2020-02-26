@@ -2,6 +2,7 @@ from pathlib import Path
 from queue import Queue, Empty
 import datetime
 import functools
+import os
 import threading
 import time
 
@@ -45,9 +46,9 @@ def run(execute, name, target=None, source=None,
       A strftime-style format string for commit messages
     """
     queue = Queue()
-    git = functools.partial(execute.run, 'git', cwd=source)
+    source = Path(os.path.expandvars(source or '.')).expanduser().resolve()
+    git = functools.partial(execute.run, 'git', cwd=str(source))
     remotes = remotes or {}
-    source = source or '.'
 
     def items_in_queue():
         items = []
@@ -67,9 +68,11 @@ def run(execute, name, target=None, source=None,
 
     def commit():
         lines = git('status', '--porcelain')
+        print(lines)
         if not add_unknown_files:
             lines = [i for i in lines if not i.startwith('??')]
 
+        print(lines)
         if lines:
             files = [i.split(maxsplit=1)[1] for i in lines]
             git('add', *files)
@@ -83,7 +86,7 @@ def run(execute, name, target=None, source=None,
                 git('push', remote)
 
     def initialize():
-        if not (Path(source) / '.git').is_dir():
+        if not (source / '.git').is_dir():
             if not git_init:
                 raise ValueError('%s is not a git directory' % source)
             git('init')
@@ -92,4 +95,5 @@ def run(execute, name, target=None, source=None,
 
     threading.Thread(target=service_queue, daemon=True).start()
     initialize()
-    execute.observe(queue.put, source)
+
+    execute.observe(queue.put, source.absolute())

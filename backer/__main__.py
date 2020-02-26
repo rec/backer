@@ -3,9 +3,9 @@ from . execute import Execute
 import yaml
 
 
-def main(args=None, print=print):
+def main(args=None, print=print, execute=None):
     cfg = config.config(args)
-    execute = Execute()
+    execute = execute or Execute()
 
     if cfg.pop('dry_run'):
         print(yaml.safe_dump(cfg))
