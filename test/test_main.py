@@ -12,4 +12,4 @@ class TestMockMain(unittest.TestCase):
         self.result = []
 
     def test_git(self):
-        main(('-c', 'git:'), self.result.append, self.execute)
+        main(('-c', 'git:'))

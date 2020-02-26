@@ -1,15 +1,10 @@
 from . import config, tasks
 from . execute import Execute
-import yaml
 
 
-def main(args=None, print=print, execute=None):
+def main(args=None):
     cfg = config.config(args)
-    execute = execute or Execute()
-
-    if cfg.pop('dry_run'):
-        print(yaml.safe_dump(cfg))
-        return
+    execute = Execute()
 
     target = cfg.pop('target')
     source = cfg.pop('source')

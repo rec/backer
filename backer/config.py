@@ -21,8 +21,6 @@ def config(args=None):
     p.add_argument('target', default=None, nargs='?', help=_TARGET_HELP)
     p.add_argument('source', default=None, nargs='?', help=_SOURCE_HELP)
     p.add_argument('--config', '-c', nargs='+', help=_CONFIG_HELP)
-    p.add_argument(
-        '--dry-run', '-d', default=None, action='store_true', help=_DRY_HELP)
 
     result = p.parse_args(args)
     cfg = _combine_sections(result.config or [_get_default_config()])
