@@ -1,4 +1,3 @@
-import schedule as _schedule
 import subprocess
 import threading
 import time
@@ -8,47 +7,9 @@ from queue import Queue, Empty
 import os
 
 
-def run_git(execute, name, target=None, source=None,
-            remotes=None,
-            git_init=True,
-            add_unknown_files=True,
-            file_event_window=0.05,
-            commit_message='%Y-%m-%dT%H:%M%SZ'):
-    """"
-    `git commit` automatically on any change within a directory.
-
-    Whenever any file changes within the `source` directory recursively,
-    attempt to make a git commit, and if this succeeds, push it to all remotes.
-
-    name:
-      name of git backup
-
-    source:
-      source directory to be backed up (default is current working directory)
-
-    target:
-      (not used)
-
-    remotes:
-      A dictionary mapping remote names to remote URLs
-
-    git_init:
-      If `source` is not a Git repository, then if `git_init` is true, then
-      `git init` will be called, otherwise an ValueError is raised
-
-    add_unknown_files:
-      If True, unknown files are automatically `git add`'ed
-
-    file_event_window:
-      If `file_event_window` is non-zero, then all file events during that
-      time window (in seconds) are consolidated into a single git commit
-
-    commit_message:
-      A strftime-style format string for commit messages
-    """
+def run_git(execute):
     queue = Queue()
-    remotes = remotes or {}
-    source = Path(os.path.expandvars(source or '.')).expanduser().resolve()
+    source = Path(os.path.expandvars('.')).expanduser().resolve()
 
     def items_in_queue():
         items = []
@@ -61,10 +22,8 @@ def run_git(execute, name, target=None, source=None,
     def service_queue():
         while True:
             if items_in_queue():
-                if file_event_window:
-                    time.sleep(file_event_window)
-                    items_in_queue()
-                pass
+                time.sleep(0.05)
+                items_in_queue()
 
     threading.Thread(target=service_queue, daemon=True).start()
     execute.observe(queue.put, source.absolute())
@@ -91,49 +50,15 @@ class Execute:
 
         self._observer.schedule(Handler(), path, recursive=True)
 
-    def schedule(self, callback, every, at=None):
-        """Schedule a function"""
-        self._schedule = self._schedule or _schedule.Schedule()
-
-        if '@' in every:
-            if at:
-                raise ValueError('Cannot use @ and at: at the same time')
-            every, at = every.split('@')
-
-        scheduler = getattr(self._schedule.every(), every)
-        if at:
-            # Rewrite 4:32 to 04:32
-            if len(at.split(':')[0]) < 2:
-                scheduler = scheduler.at('0' + at)
-
-        scheduler.at(at).do(callback)
-
     def start(self, sleep=1):
         """Start scheduling and observing, if necessary"""
         if self._observer:
             self._observer.start()
 
-        if self._schedule:
-            def loop():
-                while True:
-                    self._schedule.run_pending()
-                    time.sleep(sleep)
-
-            threading.Thread(target=loop, daemon=True).start()
-
 
 def main(args=None):
-    cfg = {
-        'target': None,
-        'source': None,
-        'remotes': None,
-        'git_init': True,
-        'add_unknown_files': True,
-        'file_event_window': 0.05,
-        'commit_message': '%Y-%m-%dT%H:%M%SZ',
-    }
     execute = Execute()
-    run_git(execute, 'one', **cfg)
+    run_git(execute)
     execute.start()
 
 
