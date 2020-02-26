@@ -8,12 +8,12 @@ from queue import Queue, Empty
 import os
 
 
-def run(execute, name, target=None, source=None,
-        remotes=None,
-        git_init=True,
-        add_unknown_files=True,
-        file_event_window=0.05,
-        commit_message='%Y-%m-%dT%H:%M%SZ'):
+def run_git(execute, name, target=None, source=None,
+            remotes=None,
+            git_init=True,
+            add_unknown_files=True,
+            file_event_window=0.05,
+            commit_message='%Y-%m-%dT%H:%M%SZ'):
     """"
     `git commit` automatically on any change within a directory.
 
@@ -133,7 +133,7 @@ def main(args=None):
         'commit_message': '%Y-%m-%dT%H:%M%SZ',
     }
     execute = Execute()
-    run(execute, 'one', **cfg)
+    run_git(execute, 'one', **cfg)
     execute.start()
 
 
