@@ -14,16 +14,10 @@ class TestMockMain(unittest.TestCase):
         self.execute = execute.Execute()
         self.result = []
 
-    def main(self, *args):
-        main(args, self.result.append, self.execute)
-
-    def test_dry_run(self):
-        self.main('-d', '-c', 'git:')
-        assert yaml.safe_load(self.result[0]) == DRY_RUN
-
     @repo.test
     def test_git(self):
-        self.main('-c', 'git:')
+        main(('-c', 'git:'), self.result.append, self.execute)
+        time.sleep(0.1)
         repo.write_files('a', 'b', 'c')
         time.sleep(0.1)
         files = GIT.diff_tree('--no-commit-id', '--name-only', '-r', 'HEAD')
