@@ -1,4 +1,4 @@
 backer
 ======
 
-continuous backups using Python
+📦 continuous backups in Python 📦
