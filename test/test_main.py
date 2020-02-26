@@ -1,9 +1,6 @@
 from backer.__main__ import main
 from backer import execute
-from gitz.git import GIT, repo
-import time
 import unittest
-import yaml
 
 CLASSES = '__main__', 'git', 'rsync', 'database'
 PATCHES = ['backer.%s.execute' % c for c in CLASSES]
@@ -14,25 +11,5 @@ class TestMockMain(unittest.TestCase):
         self.execute = execute.Execute()
         self.result = []
 
-    @repo.test
     def test_git(self):
         main(('-c', 'git:'), self.result.append, self.execute)
-        time.sleep(0.1)
-        repo.write_files('a', 'b', 'c')
-        time.sleep(0.1)
-        files = GIT.diff_tree('--no-commit-id', '--name-only', '-r', 'HEAD')
-        assert set(files) == set('abc')
-
-
-DRY_RUN = yaml.safe_load("""
-git:
-  '0':
-    add_unknown_files: true
-    git_init: true
-    commit_message: '%Y-%m-%dT%H:%M%SZ'
-    remotes: null
-    source: null
-    target: null
-    file_event_window: 0.05
-source: null
-target: null""")
