@@ -83,15 +83,5 @@ def run(execute, name, target=None, source=None,
             for remote in remotes:
                 git('push', remote)
 
-    def initialize():
-        if not (source / '.git').is_dir():
-            if not git_init:
-                raise ValueError('%s is not a git directory' % source)
-            git('init')
-            for name, remote in remotes.items():
-                git('remote', 'add', name, remote)
-
     threading.Thread(target=service_queue, daemon=True).start()
-    initialize()
-
     execute.observe(queue.put, source.absolute())
