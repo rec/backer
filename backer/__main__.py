@@ -1,9 +1,10 @@
 from . import config, tasks
 from . execute import Execute
+import time
 import yaml
 
 
-def main(args=None, print=print, execute=None):
+def main(args=None, print=print, execute=None, block=True):
     cfg = config.config(args)
     execute = execute or Execute()
 
@@ -21,7 +22,15 @@ def main(args=None, print=print, execute=None):
             desc['source'] = desc['source'] or source
             task.run(execute, name, **desc)
 
-    execute.start()
+    threads = execute.start()
+
+    if block:
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            pass
+    return threads
 
 
 if __name__ == '__main__':

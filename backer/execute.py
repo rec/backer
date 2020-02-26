@@ -1,8 +1,8 @@
 import schedule as _schedule
 import subprocess
-import threading
 import time
 from watchdog.observers import Observer
+from .stoppable_thread import StoppableThreadList
 
 
 class Execute:
@@ -45,8 +45,11 @@ class Execute:
 
     def start(self, sleep=1):
         """Start scheduling and observing, if necessary"""
+        threads = StoppableThreadList()
+
         if self._observer:
             self._observer.start()
+            threads.add(self._observer)
 
         if self._schedule:
             def loop():
@@ -54,4 +57,6 @@ class Execute:
                     self._schedule.run_pending()
                     time.sleep(sleep)
 
-            threading.Thread(target=loop, daemon=True).start()
+            threads.new(loop)
+
+        return threads

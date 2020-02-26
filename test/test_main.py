@@ -24,8 +24,8 @@ class TestMockMain(unittest.TestCase):
         self.execute = FakeExecute()
         self.result = []
 
-    def main(self, *args):
-        main(args, self.result.append, self.execute)
+    def main(self, *args, **kwds):
+        return main(args, self.result.append, self.execute, **kwds)
 
     def test_dry_run(self):
         self.main('-d', '-c', 'git:')
@@ -33,12 +33,14 @@ class TestMockMain(unittest.TestCase):
 
     @repo.test
     def test_git(self):
-        self.main('-c', 'git:')
+        threads = self.main('-c', 'git:', block=False)
         repo.write_files('a', 'b', 'c')
         self.execute.callback(None)
         pause()
         files = GIT.diff_tree('--no-commit-id', '--name-only', '-r', 'HEAD')
         assert set(files) == set('abc')
+        threads.stop()
+        threads.join()
 
 
 DRY_RUN = yaml.safe_load("""
