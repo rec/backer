@@ -1,19 +1,26 @@
-from . import config, tasks
-from . execute import Execute
+from . import tasks
+from .execute import Execute
 
 
 def main(args=None):
-    cfg = config.config(args)
+    cfg = {
+        'git': {
+            '0': {
+                'target': None,
+                'source': None,
+                'remotes': None,
+                'git_init': True,
+                'add_unknown_files': True,
+                'file_event_window': 0.05,
+                'commit_message': '%Y-%m-%dT%H:%M%SZ',
+            }
+        }
+    }
     execute = Execute()
-
-    target = cfg.pop('target')
-    source = cfg.pop('source')
 
     for task_name, section in cfg.items():
         task = tasks.TASKS[task_name]
         for name, desc in section.items():
-            desc['target'] = desc['target'] or target
-            desc['source'] = desc['source'] or source
             task.run(execute, name, **desc)
 
     execute.start()
