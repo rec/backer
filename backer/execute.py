@@ -2,7 +2,7 @@ import schedule as _schedule
 import subprocess
 import threading
 import time
-import watchdog
+from watchdog.observers import Observer
 
 
 class Execute:
@@ -16,7 +16,7 @@ class Execute:
 
     def observe(self, callback, path):
         """Call `callback` if any file recursively within `path` changes"""
-        self._observer = self._observer or watchdog.Observer()
+        self._observer = self._observer or Observer()
 
         class Handler:
             @staticmethod
@@ -24,7 +24,7 @@ class Execute:
                 if not event.is_directory:
                     callback(event)
 
-        self._observer.schedule(Handler(path), path, recursive=True)
+        self._observer.schedule(Handler(), path, recursive=True)
 
     def schedule(self, callback, every, at=None):
         """Schedule a function"""

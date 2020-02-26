@@ -2,6 +2,7 @@ from pathlib import Path
 from queue import Queue, Empty
 import datetime
 import functools
+import os
 import threading
 import time
 
@@ -47,7 +48,7 @@ def run(execute, name, target=None, source=None,
     queue = Queue()
     git = functools.partial(execute.run, 'git', cwd=source)
     remotes = remotes or {}
-    source = source or '.'
+    source = Path(os.path.expandvars(source or '.')).expanduser().resolve()
 
     def items_in_queue():
         items = []
@@ -83,7 +84,7 @@ def run(execute, name, target=None, source=None,
                 git('push', remote)
 
     def initialize():
-        if not (Path(source) / '.git').is_dir():
+        if not (source / '.git').is_dir():
             if not git_init:
                 raise ValueError('%s is not a git directory' % source)
             git('init')
@@ -92,4 +93,5 @@ def run(execute, name, target=None, source=None,
 
     threading.Thread(target=service_queue, daemon=True).start()
     initialize()
-    execute.observe(queue.put, source)
+
+    execute.observe(queue.put, source.absolute())
