@@ -12,9 +12,9 @@ def block():
         pass
 
 
-def main(args=None, print=print, execute=None):
+def main(args=None, print=print):
     cfg = config.config(args)
-    execute = execute or Execute()
+    execute = Execute()
 
     if cfg.pop('dry_run'):
         print(yaml.safe_dump(cfg))
