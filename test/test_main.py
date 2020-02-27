@@ -1,7 +1,6 @@
 from backer.__main__ import main
 from backer import execute
 from gitz.git import GIT, repo
-
 import time
 import unittest
 import yaml
@@ -33,14 +32,13 @@ class TestMockMain(unittest.TestCase):
 
     @repo.test
     def test_git(self):
-        threads = self.main('-c', 'git:', block=False)
+        threads = self.main('-c', 'git:')
         repo.write_files('a', 'b', 'c')
         self.execute.callback(None)
         pause()
         files = GIT.diff_tree('--no-commit-id', '--name-only', '-r', 'HEAD')
         assert set(files) == set('abc')
-        threads.stop()
-        threads.join()
+        threads.shutdown()
 
 
 DRY_RUN = yaml.safe_load("""

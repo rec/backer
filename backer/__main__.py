@@ -4,7 +4,15 @@ import time
 import yaml
 
 
-def main(args=None, print=print, execute=None, block=True):
+def block():
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        pass
+
+
+def main(args=None, print=print, execute=None):
     cfg = config.config(args)
     execute = execute or Execute()
 
@@ -22,16 +30,9 @@ def main(args=None, print=print, execute=None, block=True):
             desc['source'] = desc['source'] or source
             task.run(execute, name, **desc)
 
-    threads = execute.start()
-
-    if block:
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            pass
-    return threads
+    return execute.start()
 
 
 if __name__ == '__main__':
     main()
+    block()

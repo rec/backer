@@ -43,6 +43,10 @@ class StoppableThreadList:
         for i in self.threads:
             i.join()
 
+    def shutdown(self):
+        self.stop()
+        self.join()
+
     @property
     def running(self):
         return any(i.running for i in self.threads)
