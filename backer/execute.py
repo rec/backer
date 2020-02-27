@@ -48,7 +48,7 @@ class Execute:
         threads = StoppableThreadList()
 
         if self._observer:
-            threads.add(self._observer)
+            threads.add_thread(self._observer)
 
         if self._schedule:
             def loop():
@@ -56,6 +56,6 @@ class Execute:
                     self._schedule.run_pending()
                     time.sleep(sleep)
 
-            threads.new(loop)
+            threads.new_thread(loop)
 
         return threads
