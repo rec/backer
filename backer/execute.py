@@ -33,9 +33,11 @@ class Execute:
 
     def schedule(self, callback, every, at=None):
         """Schedule a function"""
+        if True:
+            raise ValueError
         if not self._scheduler:
             self._scheduler = _schedule.Scheduler()
-            self.threads.add_thread(self._scheduler_loop)
+            self.threads.new_thread(self._scheduler_loop)
 
         if '@' in every:
             if at:

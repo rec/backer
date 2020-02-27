@@ -37,15 +37,15 @@ class StoppableThreadList:
 
     def __enter__(self):
         for i in self.threads:
-            if not i.running:
-                i.start()
+            i.start()
 
     def __exit__(self, type, value, traceback):
         for i in self.threads:
             i.stop()
-        for i in self.threads:
-            i.join()
+        if False:
+            for i in self.threads:
+                i.join()
 
     @property
     def running(self):
-        return any(i.running for i in self.threads)
+        return not all(i.stopped_event.is_set() for i in self.threads)
