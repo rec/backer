@@ -7,7 +7,7 @@ from .stoppable_thread import StoppableThreadList
 
 class Execute:
     def __init__(self, sleep=1):
-        self._observer = self._schedule = None
+        self._observer = self._scheduler = None
         self.sleep = sleep
         self.threads = StoppableThreadList()
 
@@ -31,20 +31,21 @@ class Execute:
 
     def schedule(self, callback, every, at=None):
         """Schedule a function"""
-        self._schedule = self._schedule or _schedule.Schedule()
+        self._scheduler = self._scheduler or _schedule.Scheduler()
 
         if '@' in every:
             if at:
                 raise ValueError('Cannot use @ and at: at the same time')
             every, at = every.split('@')
 
-        scheduler = getattr(self._schedule.every(), every)
+        sched = getattr(self._scheduler.every(), every)
         if at:
             # Rewrite 4:32 to 04:32
             if len(at.split(':')[0]) < 2:
-                scheduler = scheduler.at('0' + at)
+                at = '0' + at
+            sched = sched.at(at)
 
-        scheduler.at(at).do(callback)
+        sched.do(callback)
 
     def start_threads(self, sleep=1):
         """Start scheduling and observing, if necessary"""
@@ -52,10 +53,10 @@ class Execute:
         if self._observer:
             self.threads.add_thread(self._observer)
 
-        if self._schedule:
+        if self._scheduler:
             def loop():
                 while True:
-                    self._schedule.run_pending()
+                    self._scheduler.run_pending()
                     time.sleep(sleep)
 
             self.threads.new_thread(loop)
