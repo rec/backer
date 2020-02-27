@@ -45,7 +45,7 @@ def run(execute, name, target=None, source=None,
     if create_if_missing and not rsync_dir.exists():
         rsync()
 
-    execute.run(rsync, every, at)
+    execute.schedule(rsync, every, at)
 
 
 DEFAULT = {
