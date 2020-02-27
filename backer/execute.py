@@ -1,8 +1,8 @@
+from .stoppable_thread import StoppableThreadList
+from watchdog.observers import Observer
 import schedule as _schedule
 import subprocess
 import time
-from watchdog.observers import Observer
-from .stoppable_thread import StoppableThreadList
 
 
 class Execute:
@@ -19,7 +19,9 @@ class Execute:
 
     def observe(self, callback, path):
         """Call `callback` if any file recursively within `path` changes"""
-        self._observer = self._observer or Observer()
+        if not self._observer:
+            self._observer = Observer()
+            self.threads.add_thread(self._observer)
 
         class Handler:
             @staticmethod
@@ -31,7 +33,9 @@ class Execute:
 
     def schedule(self, callback, every, at=None):
         """Schedule a function"""
-        self._scheduler = self._scheduler or _schedule.Scheduler()
+        if not self._scheduler:
+            self._scheduler = _schedule.Scheduler()
+            self.threads.add_thread(self._scheduler_loop)
 
         if '@' in every:
             if at:
@@ -47,16 +51,14 @@ class Execute:
 
         sched.do(callback)
 
-    def start_threads(self, sleep=1):
-        """Start scheduling and observing, if necessary"""
+    def __enter__(self):
+        self.threads.__enter__()
+        return self
 
-        if self._observer:
-            self.threads.add_thread(self._observer)
+    def __exit__(self, type, value, traceback):
+        self.threads.__exit__(type, value, traceback)
 
-        if self._scheduler:
-            def loop():
-                while True:
-                    self._scheduler.run_pending()
-                    time.sleep(sleep)
-
-            self.threads.new_thread(loop)
+    def _scheduler_loop(self):
+        while True:
+            self._scheduler.run_pending()
+            time.sleep(self.sleep)

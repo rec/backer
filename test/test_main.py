@@ -13,16 +13,18 @@ PATCHES = ['backer.%s.execute' % c for c in CLASSES]
 class FakeExecute(execute.Execute):
     def __init__(self):
         super().__init__()
-        FakeExecute.schedule = []
+        self.scheduled = []
+        self.observed = []
 
     def observe(self, observer, path):
-        FakeExecute.observer = observer
+        self.observed.append((observer, path))
 
     def schedule(self, callback, every, at=None):
-        FakeExecute.schedule.append((callback, every, at))
+        self.scheduled.append((callback, every, at))
 
 
-def pause():
+def wait():
+    # Wait for a queue in another thread to pick up events
     time.sleep(0.1)
 
 
@@ -40,10 +42,12 @@ class TestMockMain(unittest.TestCase):
     @mock.patch('backer.__main__.Execute', FakeExecute)
     @repo.test
     def test_git(self):
-        with self.main('-c', 'git:'):
+        with self.main('-c', 'git:') as execute:
             repo.write_files('a', 'b', 'c')
-            FakeExecute.observer(None)
-            pause()
+
+            ((observer, path), ) = execute.observed
+            observer(None)
+            wait()
             files = GIT.diff_tree(
                 '--no-commit-id', '--name-only', '-r', 'HEAD')
             assert set(files) == set('abc')
