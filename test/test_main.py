@@ -12,6 +12,7 @@ PATCHES = ['backer.%s.execute' % c for c in CLASSES]
 
 class FakeExecute(execute.Execute):
     def __init__(self):
+        super().__init__()
         FakeExecute.schedule = []
 
     def observe(self, observer, path):

@@ -6,7 +6,10 @@ from .stoppable_thread import StoppableThreadList
 
 
 class Execute:
-    _observer = _schedule = None
+    def __init__(self, sleep=1):
+        self._observer = self._schedule = None
+        self.sleep = sleep
+        self.threads = StoppableThreadList()
 
     def run(self, *args, **kwds):
         print('$', *args)
@@ -43,12 +46,11 @@ class Execute:
 
         scheduler.at(at).do(callback)
 
-    def threads(self, sleep=1):
+    def start_threads(self, sleep=1):
         """Start scheduling and observing, if necessary"""
-        threads = StoppableThreadList()
 
         if self._observer:
-            threads.add_thread(self._observer)
+            self.threads.add_thread(self._observer)
 
         if self._schedule:
             def loop():
@@ -56,6 +58,4 @@ class Execute:
                     self._schedule.run_pending()
                     time.sleep(sleep)
 
-            threads.new_thread(loop)
-
-        return threads
+            self.threads.new_thread(loop)

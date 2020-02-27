@@ -22,7 +22,8 @@ def main(args=None, print=print):
             desc['source'] = desc['source'] or source
             task.run(execute, name, **desc)
 
-    return execute.threads()
+    execute.start_threads()
+    return execute.threads
 
 
 def _block():
