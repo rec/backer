@@ -43,12 +43,11 @@ class Execute:
 
         scheduler.at(at).do(callback)
 
-    def start(self, sleep=1):
+    def threads(self, sleep=1):
         """Start scheduling and observing, if necessary"""
         threads = StoppableThreadList()
 
         if self._observer:
-            self._observer.start()
             threads.add(self._observer)
 
         if self._schedule:

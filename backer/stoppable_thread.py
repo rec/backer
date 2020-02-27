@@ -3,7 +3,7 @@ import threading
 
 class StoppableThread(threading.Thread):
     def __init__(
-            self, target, *args, loop=None, daemon=True, start=True, **kwargs):
+            self, target, *args, loop=None, daemon=True, **kwargs):
         super().__init__(*args, target=target, daemon=daemon, **kwargs)
         self.stopped_event = threading.Event()
         self._loop = loop or self._loop
@@ -35,17 +35,15 @@ class StoppableThreadList:
     def new(self, *args, **kwds):
         self.threads.add(StoppableThread(*args, **kwds))
 
-    def stop(self):
+    def __enter__(self):
+        for i in self.threads:
+            i.start()
+
+    def __exit__(self, type, value, traceback):
         for i in self.threads:
             i.stop()
-
-    def join(self):
         for i in self.threads:
             i.join()
-
-    def shutdown(self):
-        self.stop()
-        self.join()
 
     @property
     def running(self):

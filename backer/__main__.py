@@ -22,7 +22,7 @@ def main(args=None, print=print):
             desc['source'] = desc['source'] or source
             task.run(execute, name, **desc)
 
-    return execute.start()
+    return execute.threads()
 
 
 def _block():
@@ -34,5 +34,5 @@ def _block():
 
 
 if __name__ == '__main__':
-    main()
-    _block()
+    with main():
+        _block()

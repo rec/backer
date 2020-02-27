@@ -11,8 +11,14 @@ PATCHES = ['backer.%s.execute' % c for c in CLASSES]
 
 
 class FakeExecute(execute.Execute):
-    def observe(self, callback, path):
-        FakeExecute.callback = callback
+    def __init__(self):
+        FakeExecute.schedule = []
+
+    def observe(self, observer, path):
+        FakeExecute.observer = observer
+
+    def schedule(self, callback, every, at=None):
+        FakeExecute.schedule.append((callback, every, at))
 
 
 def pause():
@@ -21,7 +27,6 @@ def pause():
 
 class TestMockMain(unittest.TestCase):
     def setUp(self):
-        self.execute = FakeExecute()
         self.result = []
 
     def main(self, *args, **kwds):
@@ -34,13 +39,13 @@ class TestMockMain(unittest.TestCase):
     @mock.patch('backer.__main__.Execute', FakeExecute)
     @repo.test
     def test_git(self):
-        threads = self.main('-c', 'git:')
-        repo.write_files('a', 'b', 'c')
-        FakeExecute.callback(None)
-        pause()
-        files = GIT.diff_tree('--no-commit-id', '--name-only', '-r', 'HEAD')
-        assert set(files) == set('abc')
-        threads.shutdown()
+        with self.main('-c', 'git:'):
+            repo.write_files('a', 'b', 'c')
+            FakeExecute.observer(None)
+            pause()
+            files = GIT.diff_tree(
+                '--no-commit-id', '--name-only', '-r', 'HEAD')
+            assert set(files) == set('abc')
 
 
 DRY_RUN = yaml.safe_load("""
