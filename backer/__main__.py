@@ -4,14 +4,6 @@ import time
 import yaml
 
 
-def block():
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        pass
-
-
 def main(args=None, print=print):
     cfg = config.config(args)
     execute = Execute()
@@ -33,6 +25,14 @@ def main(args=None, print=print):
     return execute.start()
 
 
+def _block():
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        pass
+
+
 if __name__ == '__main__':
     main()
-    block()
+    _block()
