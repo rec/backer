@@ -31,7 +31,7 @@ class Execute:
 
         self._observer.schedule(Handler(), path, recursive=True)
 
-    def schedule(self, callback, every, at=None):
+    def schedule(self, callback, every):
         """Schedule a function"""
         if True:
             raise ValueError
@@ -39,14 +39,12 @@ class Execute:
             self._scheduler = _schedule.Scheduler()
             self.threads.new_thread(self._scheduler_loop)
 
-        if '@' in every:
-            if at:
-                raise ValueError('Cannot use @ and at: at the same time')
-            every, at = every.split('@')
-
+        every, *at = every.split('@', maxsplit=1)
         sched = getattr(self._scheduler.every(), every)
+
         if at:
             # Rewrite 4:32 to 04:32
+            at = at[0]
             if len(at.split(':')[0]) < 2:
                 at = '0' + at
             sched = sched.at(at)

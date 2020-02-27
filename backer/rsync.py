@@ -2,8 +2,7 @@ from pathlib import Path
 
 
 def run(execute, name, target=None, source=None,
-        every='day',
-        at='3:32',
+        every='day@3:32',
         exclude_files=('.git',),
         flags='--archive -v',
         create_if_missing=True):
@@ -45,13 +44,4 @@ def run(execute, name, target=None, source=None,
     if create_if_missing and not rsync_dir.exists():
         rsync()
 
-    execute.schedule(rsync, every, at)
-
-
-DEFAULT = {
-    'create': True,
-    'every': 'day',
-    'exclude': ('.git',),
-    'at': '3:32',
-    'flags': '--archive -v',
-}
+    execute.schedule(rsync, every)

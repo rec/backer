@@ -32,7 +32,7 @@ class TestConfig(TestCase):
         assert expected == actual
 
     def test_config(self):
-        cfg = 'rsync: {hourly: {every: hour}}'
+        cfg = 'rsync: {hourly: {every: hour@3:32}}'
         cfg = config.config(['foo', '-c', cfg])
 
         expected = {
@@ -41,9 +41,8 @@ class TestConfig(TestCase):
             'dry_run': None,
             'rsync': {
                 'hourly': {
-                    'at': '3:32',
                     'create_if_missing': True,
-                    'every': 'hour',
+                    'every': 'hour@3:32',
                     'exclude_files': ('.git',),
                     'flags': '--archive -v',
                     'source': None,
