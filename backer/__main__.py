@@ -6,8 +6,6 @@ import yaml
 
 def main(args=None, print=print):
     cfg = config.config(args)
-    execute = Execute()
-
     if cfg.pop('dry_run'):
         print(yaml.safe_dump(cfg))
         return
@@ -15,6 +13,7 @@ def main(args=None, print=print):
     target = cfg.pop('target')
     source = cfg.pop('source')
 
+    execute = Execute()
     for task_name, section in cfg.items():
         task = tasks.TASKS[task_name]
         for name, desc in section.items():

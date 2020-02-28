@@ -1,5 +1,7 @@
-from unittest import TestCase
 from backer import config
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest import TestCase
 
 
 class TestConfig(TestCase):
@@ -34,18 +36,26 @@ class TestConfig(TestCase):
     def test_config(self):
         cfg = 'rsync: {hourly: {every: hour@3:32}}'
         cfg = config.config(['foo', '-c', cfg])
+        assert cfg == EXPECTED
 
-        expected = {
-            'target': 'foo',
+    def test_variable_substitution(self):
+        with TemporaryDirectory() as source:
+            fname = Path(source) / '.env'
+            fname.write_text('name = hourly\n# comment\nevery=hour@3:32')
+            cfg = 'rsync: {"${name}": {every: "{every}"}}'
+            cfg = config.config(['foo', '-c', cfg, '--env-file', str(fname)])
+            assert cfg == EXPECTED
+
+
+EXPECTED = {
+    'target': 'foo',
+    'source': None,
+    'dry_run': False,
+    'rsync': {
+        'hourly': {
+            'create_if_missing': True,
+            'every': 'hour@3:32',
+            'exclude_files': ('.git',),
+            'flags': '--archive -v',
             'source': None,
-            'dry_run': None,
-            'rsync': {
-                'hourly': {
-                    'create_if_missing': True,
-                    'every': 'hour@3:32',
-                    'exclude_files': ('.git',),
-                    'flags': '--archive -v',
-                    'source': None,
-                    'target': None}}}
-
-        assert cfg == expected
+            'target': None}}}
