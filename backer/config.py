@@ -17,7 +17,7 @@ STEM = Path('backer')
 SUFFIXES = '.yml', '.yaml', '.json'
 
 
-def config(args=None, env=os.environ):
+def config(args=None, environ=os.environ):
     p = argparse.ArgumentParser(description=_DESCRIPTION)
 
     p.add_argument('target', default=None, nargs='?', help=_TARGET_HELP)
@@ -25,19 +25,29 @@ def config(args=None, env=os.environ):
 
     p.add_argument('--config', '-c', nargs='+', help=_CONFIG_HELP)
     p.add_argument('--dry-run', '-d', action='store_true', help=_DRY_RUN_HELP)
+    p.add_argument('--env', '-e', nargs='*', help=_ENV_HELP)
     p.add_argument('--env-file', default=None, help=_ENV_FILE_HELP)
 
-    results = vars(p.parse_args(args))
-    variables.read_env(results.pop('env_file'))
+    arguments = vars(p.parse_args(args))
+    env_file = arguments.pop('env_file')
+    config = arguments.pop('config') or [_get_default_config()]
+    env = arguments.pop('env') or ()
 
-    configs = results.pop('config') or [_get_default_config()]
-    cfg = _combine_sections(configs)
-    cfg.update(results)
+    variables.read_env(env_file)
 
-    return variables.replace(cfg, env)
+    for key_value in env:
+        if '=' in key_value:
+            key, value = key_value.split('=', maxsplit=1)
+            value = value.strip()
+        else:
+            key, value = key_value, True
+        environ[key.strip()] = value
+
+    config = dict(_combine(config), **arguments)
+    return variables.replace(config, environ)
 
 
-def _combine_sections(sections):
+def _combine(sections):
     config = {}
 
     for section in sections:
@@ -88,15 +98,28 @@ def _get_default_config():
 
 
 _DESCRIPTION = 'Periodically back up a directory or database'
+
 _CONFIG_HELP = 'One or more JSON or Yaml configuration files'
-_DRY_RUN_HELP = """
+
+_DRY_RUN_HELP = """\
 If set, print the final configuration and stop without backing up"""
-_ENV_FILE_HELP = """
+
+_ENV_FILE_HELP = """\
 The file to read environment variables from - it is an error if this
 file does not exist.  If this variable is not set, environment variables
 are read from the file .env, if it exists.  If this variable is set to '',
 do not read any environment variables.
 """
+
+_ENV_HELP = """
+Set an environment variable in the form NAME=VALUE. There can be
+multiple -e arguments.
+
+`NAME=` sets the value to be the empty string ''
+Just `NAME` sets the value to be the Python value `True`, like a flag
+"""
+
 _SOURCE_HELP = """
 The source directory to back up from.  Default is the current directory."""
+
 _TARGET_HELP = 'The target directory to back up to.'

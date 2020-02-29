@@ -6,7 +6,7 @@ from unittest import TestCase
 
 class TestConfig(TestCase):
     def test_simple(self):
-        actual = config._combine_sections(['git:'])
+        actual = config._combine(['git:'])
         expected = {
             'git': {
                 '0': {
@@ -20,7 +20,7 @@ class TestConfig(TestCase):
         assert expected == actual
 
     def test_all(self):
-        actual = config._combine_sections(['git:\nrsync:\ndatabase:'])
+        actual = config._combine(['git:\nrsync:\ndatabase:'])
         expected = {k: {'0': v} for k, v in config.DEFAULTS.items()}
         assert expected == actual
 
@@ -29,7 +29,7 @@ class TestConfig(TestCase):
         assert config.DEFAULTS != actual
 
     def test_parts(self):
-        actual = config._combine_sections(['git:', 'rsync:', 'database:'])
+        actual = config._combine(['git:', 'rsync:', 'database:'])
         expected = {k: {'0': v} for k, v in config.DEFAULTS.items()}
         assert expected == actual
 
@@ -42,8 +42,11 @@ class TestConfig(TestCase):
         with TemporaryDirectory() as source:
             fname = Path(source) / '.env'
             fname.write_text('name = hourly\n# comment\nevery=hour@3:32')
+            fname.write_text('# comment\nevery=hour@3:32')
             cfg = 'rsync: {"${name}": {every: "{every}"}}'
-            cfg = config.config(['foo', '-c', cfg, '--env-file', str(fname)])
+            env = ' name = hourly '
+            cmd = ['foo', '-c', cfg, '-e', env, '--env-file', str(fname)]
+            cfg = config.config(cmd)
             assert cfg == EXPECTED
 
 
