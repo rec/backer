@@ -20,7 +20,7 @@ class TestConfig(TestCase):
         assert expected == actual
 
     def test_all(self):
-        actual = config._combine(['git:\nrsync:\ndatabase:'])
+        actual = config._combine(['git:\nrsync:\nmysql:'])
         expected = {k: {'0': v} for k, v in config.DEFAULTS.items()}
         assert expected == actual
 
@@ -29,7 +29,7 @@ class TestConfig(TestCase):
         assert config.DEFAULTS != actual
 
     def test_parts(self):
-        actual = config._combine(['git:', 'rsync:', 'database:'])
+        actual = config._combine(['git:', 'rsync:', 'mysql:'])
         expected = {k: {'0': v} for k, v in config.DEFAULTS.items()}
         assert expected == actual
 

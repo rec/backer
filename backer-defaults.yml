@@ -1,7 +1,7 @@
 target:
 source:
 
-database:
+mysql:
   every: day
   at: '4:23'
   type: mysql
