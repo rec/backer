@@ -30,6 +30,6 @@ class Rsync(ScheduledCommandTask):
         super().__init__(execute, name, target, create, every, flags)
         self.source = source
 
-    def start(self):
-        self.command_line.extend((self.source or '.', self.task_dir))
-        super().start()
+    def build_command_line(self):
+        self.add(self.source or '.', self.task_dir)
+        super().build_command_line()

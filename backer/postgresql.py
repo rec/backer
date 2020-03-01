@@ -1,10 +1,10 @@
 from . task import DatabaseTask
 
-# See https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html
+# See https://www.postgresql.org/docs/current/app-pgdump.html
 
 
-class Mysql(DatabaseTask):
-    COMMAND = 'mysqldump'
+class Postgresql(DatabaseTask):
+    COMMAND = 'pg_dump'
 
     def build_command_line(self):
         super().build_command_line()

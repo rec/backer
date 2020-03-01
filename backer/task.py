@@ -11,6 +11,10 @@ class Task:
     def start(self):
         raise NotImplementedError
 
+    @staticmethod
+    def split(s):
+        return shlex.split(s) if isinstance(s, str) else s or []
+
 
 class ScheduledCommandTask(Task):
     COMMAND = '(none)'
@@ -34,11 +38,14 @@ class ScheduledCommandTask(Task):
         self.target = Path(target)
         self.task_dir = self.target / name
         self.every = every
-        self.flags = shlex.split(flags) if isinstance(flags, str) else flags
+        self.flags = self.split(flags)
         self.command_line = [self.COMMAND]
 
+    def build_command_line(self):
+        self.add(*self.flags)
+
     def start(self):
-        self.command_line.extend(self.flags)
+        self.build_command_line()
         if not self.task_dir.exists():
             self.task_dir.mkdir(parents=True)
             if self.create:
@@ -54,17 +61,42 @@ class ScheduledCommandTask(Task):
 
         return ec
 
+    def add(self, *args, **kwds):
+        self.command_line.extend(args)
+
+        for flag, value in kwds.items():
+            if value is not None:
+                flag = flag.replace('_', '-')
+                flag = ('-' if len(flag) == 1 else '--') + flag
+                if value is not True:
+                    flag = '%s=%s' % (flag, value)
+                self.add(flag)
+
 
 class DatabaseTask(ScheduledCommandTask):
     FLAG_VARIABLES = {'user', 'password', 'port', 'host'}
+    SUFFIX = '.sql'
 
-    def __init__(self, execute, name, target, create, every, flags,
-                 user, password, port, host, database, table):
+    def __init__(self, execute, name,
+                 target=None,
+                 create=True,
+                 every='day',
+                 flags='',
+                 user=None,
+                 password=None,
+                 port=None,
+                 host=None,
+                 databases=None,
+                 tables=None,
+                 filename=None):
         super().__init__(execute, name, target, create, every, flags)
-        for key in self.FLAG_VARIABLES:
-            value = locals()[key]
-            if value is not None:
-                self.command_line.append('--%s=%s' % (key, value))
+        self.add(user=user, password=password, port=port, host=host)
 
-        self.database = database
-        self.table = table
+        self.databases = self.split(databases)
+        self.tables = self.split(tables)
+
+        if self.tables and len(self.databases) != 1:
+            raise ValueError('Exactly one database if there are tables')
+
+        filename = filename or (__class__.__name__.lower() + self.suffix)
+        self.filename = self.task_dir / filename
