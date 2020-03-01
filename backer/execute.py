@@ -1,7 +1,7 @@
 from .stoppable_thread import StoppableThreadList
 from watchdog.observers import Observer
+import run_subprocess as rs
 import schedule as _schedule
-import subprocess
 import time
 
 
@@ -11,11 +11,19 @@ class Execute:
         self.sleep = sleep
         self.threads = StoppableThreadList()
 
-    def run(self, *args, **kwds):
-        print('$', *args)
-        result = subprocess.check_output(args, encoding='utf-8', **kwds)
-        print(result)
-        return [i.rstrip() for i in result.splitlines()]
+    def run(self, *cmd, out=None, err=None, **kwds):
+        print('$', *cmd)
+        result = []
+
+        def output(line):
+            result.append(line)
+            print(line)
+
+        ec = rs.run(cmd, out or output, err or print, **kwds)
+        if ec:
+            raise ValueError('Command failed with error ', ec)
+
+        return result
 
     def observe(self, callback, path):
         """Call `callback` if any file recursively within `path` changes"""
