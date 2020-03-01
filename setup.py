@@ -1,6 +1,9 @@
 import backer
 from setuptools import setup
 
+with open('requirements.txt') as f:
+    _install_requires = f.read().splitlines()
+
 _classifiers = [
     'Development Status :: 4 - Beta',
     'Programming Language :: Python :: 3.5',
@@ -27,5 +30,5 @@ if __name__ == '__main__':
         license='MIT',
         classifiers=_classifiers,
         keywords=['backups'],
-        # scripts=['backer.py'],
+        install_requires=_install_requires,
     )
