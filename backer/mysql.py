@@ -1,7 +1,7 @@
-from . task import ScheduledCommandTask
+from . task import DatabaseTask
 
 
-class Mysql(ScheduledCommandTask):
+class Mysql(DatabaseTask):
     def __init__(self, execute, name,
                  target=None,
                  create=True,

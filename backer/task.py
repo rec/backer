@@ -53,3 +53,18 @@ class ScheduledCommandTask(Task):
             print('ERROR: code:', ec)
 
         return ec
+
+
+class DatabaseTask(ScheduledCommandTask):
+    FLAG_VARIABLES = {'user', 'password', 'port', 'host'}
+
+    def __init__(self, execute, name, target, create, every, flags,
+                 user, password, port, host, database, table):
+        super().__init__(execute, name, target, create, every, flags)
+        for key in self.FLAG_VARIABLES:
+            value = locals()[key]
+            if value is not None:
+                self.command_line.append('--%s=%s' % (key, value))
+
+        self.database = database
+        self.table = table
