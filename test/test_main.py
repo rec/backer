@@ -76,7 +76,7 @@ DRY_RUN = yaml.safe_load("""
 git:
   '0':
     add_unknown_files: true
-    git_init: true
+    create: true
     commit_message: '%Y-%m-%dT%H:%M%SZ'
     remotes: null
     source: null

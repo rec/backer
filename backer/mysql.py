@@ -1,10 +1,21 @@
-# Stub
+from . task import ScheduledCommandTask
 
 
-def run(execute, name, target=None, source=None,
-        every='day@4:32',
-        type='mysql',
-        tables=None,
-        user='user',
-        password='password'):
-    execute.run('something')
+class Mysql(ScheduledCommandTask):
+    def __init__(self, execute, name,
+                 target=None,
+                 create=True,
+                 every='day@4:32',
+                 flags='',
+                 type='mysql',
+                 tables=None,
+                 databases=None,
+                 user='user',
+                 password='password'):
+        super().__init__(execute, name, target, create, every, flags)
+
+        self.type = type
+        self.tables = tables
+        self.databases = databases
+        self.user = user
+        self.password = password

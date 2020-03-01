@@ -19,7 +19,7 @@ def main(args=None, print=print):
         for name, desc in section.items():
             desc['target'] = desc['target'] or target
             desc['source'] = desc['source'] or source
-            task.run(execute, name, **desc)
+            task(execute, name, **desc).start()
 
     return execute
 

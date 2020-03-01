@@ -3,30 +3,33 @@ from .task import ScheduledCommandTask
 
 class Rsync(ScheduledCommandTask):
     COMMAND = 'rsync'
-    DEFAULTS = dict(
-        ScheduledCommandTask.DEFAULTS,
-        every='day@3:32',
-        flags='--archive -v --exclude=.git',
-        source='.')
 
-    def __init__(self, *args, source, **kwds):
+    def __init__(self, execute, name,
+                 target=None,
+                 source=None,
+                 create=True,
+                 every='day@3:32',
+                 flags='--archive -v --exclude=.git'):
         """
-        Parameters from ScheduledCommandTask, plus:
+        target:
+            The root directory to back up to
+
+        every:
+            When to schedule this
+
+        flags:
+            Command line flags
+
+        create:
+            If True, immediately create an backup if there is none,
+            otherwise wait until the scheduled time for the first backup
 
         source:
            The directory to back up - default is the current working directory
         """
-        super().__init__(*args, **kwds)
+        super().__init__(execute, name, target, create, every, flags)
         self.source = source
 
     def start(self):
-        self.command_line.extend((self.source, self.task_dir))
+        self.command_line.extend((self.source or '.', self.task_dir))
         super().start()
-
-
-def run(execute, name, target=None, source=None,
-        every='day@3:32',
-        flags='--archive -v --exclude=.git',
-        create=True):
-    rs = Rsync(execute, name, create, target, every, flags, source=source)
-    rs.start()

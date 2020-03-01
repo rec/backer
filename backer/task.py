@@ -3,8 +3,6 @@ import shlex
 
 
 class Task:
-    DEFAULTS = {'create': True}
-
     def __init__(self, execute, name, create):
         self.execute = execute
         self.name = name
@@ -16,9 +14,8 @@ class Task:
 
 class ScheduledCommandTask(Task):
     COMMAND = '(none)'
-    DEFAULTS = dict(Task.DEFAULTS, target=None, every='day', flags='')
 
-    def __init__(self, execute, name, create, target, every, flags):
+    def __init__(self, execute, name, target, create, every, flags):
         """
         target:
             The root directory to back up to

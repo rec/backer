@@ -14,7 +14,7 @@ class TestConfig(TestCase):
                     'target': None,
                     'remotes': None,
                     'add_unknown_files': True,
-                    'git_init': True,
+                    'create': True,
                     'commit_message': '%Y-%m-%dT%H:%M%SZ',
                     'file_event_window': 0.05}}}
         assert expected == actual
