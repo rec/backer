@@ -56,9 +56,8 @@ EXPECTED = {
     'dry_run': False,
     'rsync': {
         'hourly': {
-            'create_if_missing': True,
+            'create': True,
             'every': 'hour@3:32',
-            'exclude_files': ('.git',),
-            'flags': '--archive -v',
+            'flags': '--archive -v --exclude=.git',
             'source': None,
             'target': None}}}
