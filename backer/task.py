@@ -49,17 +49,12 @@ class ScheduledCommandTask(Task):
         if not self.task_dir.exists():
             self.task_dir.mkdir(parents=True)
             if self.create:
-                if not self.run():
-                    raise ValueError('Creation failed')
+                self.run()
 
         self.execute.schedule(self.run, self.every)
 
     def run(self):
-        ec = self.execute.run(*self.command_line)
-        if ec:
-            print('ERROR: code:', ec)
-
-        return ec
+        return self.execute.run(*self.command_line)
 
     def add(self, *args, **kwds):
         self.command_line.extend(args)
@@ -102,5 +97,5 @@ class DatabaseTask(ScheduledCommandTask):
         if self.tables and len(self.databases) != 1:
             raise ValueError('Exactly one database if there are tables')
 
-        filename = filename or (__class__.__name__.lower() + self.suffix)
+        filename = filename or (self.__class__.__name__.lower() + self.SUFFIX)
         self.filename = self.task_dir / filename

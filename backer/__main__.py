@@ -18,7 +18,8 @@ def main(args=None, print=print):
         task = tasks.TASKS[task_name]
         for name, desc in section.items():
             desc['target'] = desc['target'] or target
-            desc['source'] = desc['source'] or source
+            if 'source' in desc:
+                desc['source'] = desc['source'] or source
             task(execute, name, **desc).start()
 
     return execute

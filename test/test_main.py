@@ -10,10 +10,19 @@ import yaml
 
 
 class FakeExecute(execute.Execute):
+    ENABLE_RUN = True
+
     def __init__(self):
         super().__init__()
         self.scheduled = []
         self.observed = []
+        self.runs = []
+
+    def run(self, *cmd, out=None, err=None, **kwds):
+        self.runs.append((cmd, out, err, kwds))
+        if self.ENABLE_RUN:
+            return super().run(*cmd, out=out, err=err, **kwds)
+        return []
 
     def observe(self, observer, path):
         self.observed.append(observer)
@@ -32,8 +41,8 @@ class TestMain(unittest.TestCase):
     def setUp(self):
         self.result = []
 
-    def main(self, *args, **kwds):
-        return main(args, self.result.append, **kwds)
+    def main(self, *args):
+        return main(args, self.result.append)
 
     def test_dry_run(self):
         self.main('-d', '-cgit:')
@@ -56,21 +65,40 @@ class TestMain(unittest.TestCase):
         with TemporaryDirectory() as source, TemporaryDirectory() as target:
             ps = Path(source)
             pt = Path(target) / '0' / ps.name
-            (ps / 'one').write_text('one')
 
-            with self.main(target, source, '-crsync:') as ex:
-                assert pt.exists()
-                assert (pt / 'one').exists()
-                assert (pt / 'one').read_text() == 'one'
+            (ps / 'one').write_text('test_one')
 
-                (ps / 'two').write_text('two')
-                callback, = ex.scheduled
+            with self.main(target, source, '-c', 'rsync:') as ex:
+                assert (pt / 'one').read_text() == 'test_one'
 
+                (ps / 'two').write_text('test_two')
+
+                (callback, ) = ex.scheduled
                 callback()
                 wait()
-                assert (pt / 'two').exists()
-                assert (pt / 'two').read_text() == 'two'
 
+                assert (pt / 'two').read_text() == 'test_two'
+
+    def test_mysql(self):
+        with TemporaryDirectory() as target:
+            cfg = yaml.safe_dump({'mysql': DATABASE})
+
+            enable_run = 'test.test_main.FakeExecute.ENABLE_RUN'
+            with mock.patch(enable_run, False):
+                with self.main(target, '-c', cfg) as ex:
+                    assert ex is not None
+                    ((cmd, *_), ) = ex.runs
+                    assert list(cmd) == MYSQL.format(tmpdir=target).split()
+
+
+DATABASE = {
+    '0': {
+        'user': 'test_user',
+        'password': 'test_password',
+        'host': 'test_host',
+        'port': 7777,
+    }
+}
 
 DRY_RUN = yaml.safe_load(
     """
@@ -86,3 +114,13 @@ git:
 source: null
 target: null"""
 )
+
+MYSQL = """\
+mysqldump\
+ --user=test_user\
+ --password=test_password\
+ --port=7777\
+ --host=test_host\
+ --result-file={tmpdir}/0/mysql.sql\
+ --all-databases\
+"""
