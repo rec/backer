@@ -69,7 +69,6 @@ class ScheduledCommandTask(Task):
 
 
 class DatabaseTask(ScheduledCommandTask):
-    FLAG_VARIABLES = {'user', 'password', 'port', 'host'}
     SUFFIX = '.sql'
 
     def __init__(
