@@ -16,7 +16,7 @@ class Mysql(DatabaseTask):
 
         elif not self.tables:
             self.add(databases=True)
-            self.add_arg(*self.databases)
+            self.add(*self.databases)
 
         else:
             (database,) = self.databases
