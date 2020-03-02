@@ -9,7 +9,7 @@ class Mysql(DatabaseTask):
     def build_command_line(self):
         super().build_command_line()
 
-        self.add(result_file=str(self.filename))
+        self.add(result_file=str(self.out_filename))
 
         if not self.databases:
             self.add(all_databases=True)

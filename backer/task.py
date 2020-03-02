@@ -70,6 +70,7 @@ class ScheduledCommandTask(Task):
 
 class DatabaseTask(ScheduledCommandTask):
     SUFFIX = '.sql'
+    TEMP_SUFFIX = '.tmp'
 
     def __init__(
         self,
@@ -102,7 +103,13 @@ class DatabaseTask(ScheduledCommandTask):
 
         filename = filename or (self.__class__.__name__.lower() + self.SUFFIX)
         self.filename = self.task_dir / filename
+        self.out_filename = self.task_dir / (filename + self.TEMP_SUFFIX)
 
     def build_command_line(self):
         self.add(**self.db_flags)
         super().build_command_line()
+
+    def run(self):
+        super().run()
+        if self.out_filename.exists():
+            self.out_filename.rename(self.filename)

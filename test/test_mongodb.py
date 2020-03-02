@@ -29,6 +29,6 @@ mongodump\
  --password=test_password\
  --port=7777\
  --host=test_host\
- --archive={tmpdir}/0/mongodb.sql.gz\
+ --archive={tmpdir}/0/mongodb.sql.gz.tmp\
  --gzip\
 """

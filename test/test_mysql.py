@@ -11,7 +11,8 @@ class TestMySql(patch.MainTester):
     def test_databases(self):
         config = {'mysql': {'0': dict(DATABASE, databases='foo bar')}}
         actual, expected = self._test(
-            config, MYSQL, '--databases', 'foo', 'bar')
+            config, MYSQL, '--databases', 'foo', 'bar'
+        )
         assert actual == expected
 
     def test_database_and_tables(self):
@@ -34,5 +35,5 @@ mysqldump\
  --password=test_password\
  --port=7777\
  --host=test_host\
- --result-file={tmpdir}/0/mysql.sql\
+ --result-file={tmpdir}/0/mysql.sql.tmp\
 """

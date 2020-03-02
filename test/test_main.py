@@ -19,7 +19,7 @@ DRY_RUN = {
             'source': None,
             'target': None,
             'file_event_window': 0.05,
-        },
+        }
     },
     'source': None,
     'target': None,

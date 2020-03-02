@@ -16,7 +16,7 @@ class Postgresql(DatabaseTask):
         else:
             raise ValueError('postgresql can back one database up, or all')
 
-        self.add(file=str(self.filename))
+        self.add(file=str(self.out_filename))
         super().build_command_line()
         for table in self.tables:
             self.add(table=table)

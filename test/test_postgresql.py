@@ -14,7 +14,8 @@ class TestPostgresql(patch.MainTester):
         config = {'postgresql': {'0': sub}}
         line = 'pg_dump foo' + POSTGRESQL
         actual, expected = self._test(
-            config, line, '--table=bing', '--table=bang')
+            config, line, '--table=bing', '--table=bang'
+        )
         assert actual == expected
 
 
@@ -26,7 +27,7 @@ DATABASE = {
 }
 
 POSTGRESQL = """\
- --file={tmpdir}/0/postgresql.sql\
+ --file={tmpdir}/0/postgresql.sql.tmp\
  --user=test_user\
  --password=test_password\
  --port=7777\

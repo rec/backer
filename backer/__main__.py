@@ -14,6 +14,7 @@ def backer(args=None, print=print, block=True):
     source = cfg.pop('source')
 
     execute = Execute()
+
     for task_name, section in cfg.items():
         task = tasks.TASKS[task_name]
         for name, desc in section.items():

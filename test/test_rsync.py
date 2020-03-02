@@ -17,7 +17,7 @@ class TestRsync(patch.MainTester):
 
                 (ps / 'two').write_text('test_two')
 
-                (callback, ) = ex.scheduled
+                (callback,) = ex.scheduled
                 callback()
                 patch.wait()
 
