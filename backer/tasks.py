@@ -1,10 +1,10 @@
-from . import git, mysql, rsync
+from . import git, mongodb, mysql, postgresql, rsync
 import inspect
 
 
 def _make():
     tasks, defaults = {}, {}
-    for module in git, mysql, rsync:
+    for module in git, mongodb, mysql, postgresql, rsync:
         name = module.__name__.split('.')[-1]
         cls = getattr(module, name.capitalize())
         tasks[name] = cls

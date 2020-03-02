@@ -56,7 +56,7 @@ def _combine(sections):
             tasks = tasks or {'0': None}
             default = DEFAULTS.get(section_name)
             if not default:
-                raise KeyError(section_name)
+                raise KeyError(section_name, 'Not a known task name')
 
             section_config = config.setdefault(section_name, {})
             for task_name, task in (tasks or {}).items():

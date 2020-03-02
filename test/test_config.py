@@ -4,6 +4,9 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase
 
 
+SECTIONS = ['git:', 'mongodb:', 'mysql:', 'postgresql:', 'rsync:']
+
+
 class TestConfig(TestCase):
     def test_simple(self):
         actual = config._combine(['git:'])
@@ -20,7 +23,7 @@ class TestConfig(TestCase):
         assert expected == actual
 
     def test_all(self):
-        actual = config._combine(['git:\nrsync:\nmysql:'])
+        actual = config._combine(['\n'.join(SECTIONS)])
         expected = {k: {'0': v} for k, v in config.DEFAULTS.items()}
         assert expected == actual
 
@@ -29,7 +32,7 @@ class TestConfig(TestCase):
         assert config.DEFAULTS != actual
 
     def test_parts(self):
-        actual = config._combine(['git:', 'rsync:', 'mysql:'])
+        actual = config._combine(SECTIONS)
         expected = {k: {'0': v} for k, v in config.DEFAULTS.items()}
         assert expected == actual
 
