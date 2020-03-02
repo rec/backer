@@ -15,10 +15,10 @@ class Mongodb(DatabaseTask):
             raise ValueError('mongodb can back one collection up, or all')
 
         super().build_command_line()
-
         self.add(archive=str(self.filename))
-        if self.filename.endswith('.gz'):
-            self.add('gzip')
+
+        if self.filename.suffix.endswith('.gz'):
+            self.add(gzip=True)
 
         if self.databases:
             self.add(db=self.databases[0])
