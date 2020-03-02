@@ -4,7 +4,7 @@ import time
 import yaml
 
 
-def main(args=None, print=print):
+def backer(args=None, print=print, block=True):
     cfg = config.config(args)
     if cfg.pop('dry_run'):
         print(yaml.safe_dump(cfg))
@@ -22,17 +22,16 @@ def main(args=None, print=print):
                 desc['source'] = desc['source'] or source
             task(execute, name, **desc).start()
 
+    if block:
+        with execute:
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                pass
+
     return execute
 
 
-def _block():
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        pass
-
-
 if __name__ == '__main__':
-    with main():
-        _block()
+    backer()

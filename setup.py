@@ -31,4 +31,5 @@ if __name__ == '__main__':
         classifiers=_classifiers,
         keywords=['backups'],
         install_requires=_install_requires,
+        scripts=['scripts/backer'],
     )

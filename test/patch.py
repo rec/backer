@@ -1,5 +1,5 @@
 from backer import execute
-from backer.__main__ import main
+from backer.__main__ import backer
 from tempfile import TemporaryDirectory
 from unittest import mock
 import time
@@ -35,7 +35,7 @@ class MainTester(unittest.TestCase):
         self.result = []
 
     def main(self, *args):
-        return main(args, self.result.append)
+        return backer(args, self.result.append, block=False)
 
     def _test(self, config, expected, *args):
         cfg = yaml.safe_dump(config)
