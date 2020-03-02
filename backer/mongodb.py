@@ -9,10 +9,10 @@ class Mongodb(DatabaseTask):
 
     def build_command_line(self):
         if len(self.databases) > 1:
-            raise ValueError('Mongo require backups of one databaase, or all')
+            raise ValueError('mongodb can back one database up, or all')
 
         if len(self.tables) > 1:
-            raise ValueError('Mongo require backups of one collection, or all')
+            raise ValueError('mongodb can back one collection up, or all')
 
         super().build_command_line()
 

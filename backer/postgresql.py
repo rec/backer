@@ -1,23 +1,22 @@
 from .task import DatabaseTask
 
-# See https://www.postgresql.org/docs/current/app-pgdump.html
+# See https://www.postgresql.org/docs/current/app-pgdump.html and
+# https://www.postgresql.org/docs/current/app-pg-dumpall.html
 
 
 class Postgresql(DatabaseTask):
     COMMAND = 'pg_dump'
+    ALL_COMMAND = 'pg_dumpall'
 
     def build_command_line(self):
-        super().build_command_line()
-
-        self.add(result_file=str(self.filename))
-
         if not self.databases:
-            self.add(all_databases=True)
-
-        elif not self.tables:
-            self.add(databases=True)
-            self.add_arg(*self.databases)
-
+            self.command_line[0] = self.ALL_COMMAND
+        elif len(self.databases) == 1:
+            self.add(self.databases[0])
         else:
-            (database,) = self.databases
-            self.add(database, *self.tables)
+            raise ValueError('postgresql can back one database up, or all')
+
+        self.add(file=str(self.filename))
+        super().build_command_line()
+        for table in self.tables:
+            self.add(table=table)
