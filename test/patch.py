@@ -37,14 +37,14 @@ class MainTester(unittest.TestCase):
     def main(self, *args):
         return main(args, self.result.append)
 
-    def run_test(self, config, expected, *args):
+    def _test(self, config, expected, *args):
         cfg = yaml.safe_dump(config)
         with TemporaryDirectory() as td:
             with self.main(td, '-c', cfg) as ex:
                 ((cmd, *_), ) = ex.runs
                 expected = ' '.join((expected.format(tmpdir=td), *args))
                 actual = ' '.join(cmd)
-                assert actual == expected
+                return actual, expected
 
 
 def wait():

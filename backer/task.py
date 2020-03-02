@@ -88,8 +88,12 @@ class DatabaseTask(ScheduledCommandTask):
         filename=None,
     ):
         super().__init__(execute, name, target, create, every, flags)
-        self.add(user=user, password=password, port=port, host=host)
-
+        self.db_flags = {
+            'user': user,
+            'password': password,
+            'port': port,
+            'host': host,
+        }
         self.databases = self.split(databases)
         self.tables = self.split(tables)
 
@@ -98,3 +102,7 @@ class DatabaseTask(ScheduledCommandTask):
 
         filename = filename or (self.__class__.__name__.lower() + self.SUFFIX)
         self.filename = self.task_dir / filename
+
+    def build_command_line(self):
+        self.add(**self.db_flags)
+        super().build_command_line()
