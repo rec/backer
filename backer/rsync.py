@@ -4,12 +4,16 @@ from .task import ScheduledCommandTask
 class Rsync(ScheduledCommandTask):
     COMMAND = 'rsync'
 
-    def __init__(self, execute, name,
-                 target=None,
-                 source=None,
-                 create=True,
-                 every='day@3:32',
-                 flags='--archive -v --exclude=.git'):
+    def __init__(
+        self,
+        execute,
+        name,
+        target=None,
+        source=None,
+        create=True,
+        every='day@3:32',
+        flags='--archive -v --exclude=.git',
+    ):
         """
         target:
             The root directory to back up to

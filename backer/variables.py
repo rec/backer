@@ -21,14 +21,17 @@ import dotenv
 import os
 import re
 
-DOCKER_RE = re.compile(r"""
+DOCKER_RE = re.compile(
+    r"""
 \$ ( \w+ \b ) |
 #    name1
 
 \$ \{ ( \w* \b ) (?: ( \:? ) ( [-?] ) ( [^}]+ ) )? \}
 #        name2        colon    sep       arg
 
-""", re.X)
+""",
+    re.X,
+)
 
 
 def read_env(env_file=None):
@@ -73,8 +76,7 @@ def _apply(s, env):
         value = env.get(name1 or name2)
         if sep == '?':
             if value is None or (colon and not value):
-                raise KeyError(
-                    arg or 'Variable "%s" does not exist' % name2)
+                raise KeyError(arg or 'Variable "%s" does not exist' % name2)
 
         elif sep == '-':
             if value is None or (colon and not value):

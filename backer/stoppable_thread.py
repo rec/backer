@@ -2,8 +2,7 @@ import threading
 
 
 class StoppableThread(threading.Thread):
-    def __init__(
-            self, target, *args, loop=None, daemon=True, **kwargs):
+    def __init__(self, target, *args, loop=None, daemon=True, **kwargs):
         super().__init__(*args, target=target, daemon=daemon, **kwargs)
         self.stopped_event = threading.Event()
 

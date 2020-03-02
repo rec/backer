@@ -1,4 +1,4 @@
-from . task import DatabaseTask
+from .task import DatabaseTask
 
 # See https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html
 
@@ -19,5 +19,5 @@ class Mysql(DatabaseTask):
             self.add_arg(*self.databases)
 
         else:
-            (database, ) = self.databases
+            (database,) = self.databases
             self.add(database, *self.tables)

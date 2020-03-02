@@ -1,5 +1,5 @@
 from . import config, tasks
-from . execute import Execute
+from .execute import Execute
 import time
 import yaml
 

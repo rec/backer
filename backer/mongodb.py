@@ -1,4 +1,4 @@
-from . task import DatabaseTask
+from .task import DatabaseTask
 
 # See https://docs.mongodb.com/manual/reference/program/mongodump/
 

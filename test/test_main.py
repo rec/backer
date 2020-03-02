@@ -48,7 +48,8 @@ class TestMockMain(unittest.TestCase):
             observer(None)
             wait()
             files = GIT.diff_tree(
-                '--no-commit-id', '--name-only', '-r', 'HEAD')
+                '--no-commit-id', '--name-only', '-r', 'HEAD'
+            )
             assert set(files) == set('abc')
 
     @mock.patch('backer.__main__.Execute', FakeExecute)
@@ -72,7 +73,8 @@ class TestMockMain(unittest.TestCase):
                 assert (pt / 'two').read_text() == 'two'
 
 
-DRY_RUN = yaml.safe_load("""
+DRY_RUN = yaml.safe_load(
+    """
 git:
   '0':
     add_unknown_files: true
@@ -83,4 +85,5 @@ git:
     target: null
     file_event_window: 0.05
 source: null
-target: null""")
+target: null"""
+)

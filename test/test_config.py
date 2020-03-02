@@ -19,7 +19,10 @@ class TestConfig(TestCase):
                     'add_unknown_files': True,
                     'create': True,
                     'commit_message': '%Y-%m-%dT%H:%M%SZ',
-                    'file_event_window': 0.05}}}
+                    'file_event_window': 0.05,
+                }
+            }
+        }
         assert expected == actual
 
     def test_all(self):
@@ -63,4 +66,7 @@ EXPECTED = {
             'every': 'hour@3:32',
             'flags': '--archive -v --exclude=.git',
             'source': None,
-            'target': None}}}
+            'target': None,
+        }
+    },
+}

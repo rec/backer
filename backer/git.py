@@ -9,14 +9,18 @@ from .task import Task
 
 
 class Git(Task):
-    def __init__(self, execute, name,
-                 target=None,
-                 source=None,
-                 create=True,
-                 remotes=None,
-                 add_unknown_files=True,
-                 file_event_window=0.05,
-                 commit_message='%Y-%m-%dT%H:%M%SZ'):
+    def __init__(
+        self,
+        execute,
+        name,
+        target=None,
+        source=None,
+        create=True,
+        remotes=None,
+        add_unknown_files=True,
+        file_event_window=0.05,
+        commit_message='%Y-%m-%dT%H:%M%SZ',
+    ):
         """"
         `git commit` automatically on any change within a directory.
 

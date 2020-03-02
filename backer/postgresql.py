@@ -1,4 +1,4 @@
-from . task import DatabaseTask
+from .task import DatabaseTask
 
 # See https://www.postgresql.org/docs/current/app-pgdump.html
 
@@ -19,5 +19,5 @@ class Postgresql(DatabaseTask):
             self.add_arg(*self.databases)
 
         else:
-            (database, ) = self.databases
+            (database,) = self.databases
             self.add(database, *self.tables)

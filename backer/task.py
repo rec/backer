@@ -77,18 +77,22 @@ class DatabaseTask(ScheduledCommandTask):
     FLAG_VARIABLES = {'user', 'password', 'port', 'host'}
     SUFFIX = '.sql'
 
-    def __init__(self, execute, name,
-                 target=None,
-                 create=True,
-                 every='day',
-                 flags='',
-                 user=None,
-                 password=None,
-                 port=None,
-                 host=None,
-                 databases=None,
-                 tables=None,
-                 filename=None):
+    def __init__(
+        self,
+        execute,
+        name,
+        target=None,
+        create=True,
+        every='day',
+        flags='',
+        user=None,
+        password=None,
+        port=None,
+        host=None,
+        databases=None,
+        tables=None,
+        filename=None,
+    ):
         super().__init__(execute, name, target, create, every, flags)
         self.add(user=user, password=password, port=port, host=host)
 
