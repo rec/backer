@@ -2,7 +2,7 @@ from . import patch
 
 
 @patch.execute
-class TestPostgres(patch.MainTester):
+class TestPostgresql(patch.MainTester):
     def test_all(self):
         config = {'postgresql': {'0': DATABASE}}
         line = 'pg_dumpall' + POSTGRESQL
