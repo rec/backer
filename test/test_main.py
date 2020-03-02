@@ -27,7 +27,8 @@ def wait():
     time.sleep(0.1)
 
 
-class TestMockMain(unittest.TestCase):
+@mock.patch('backer.__main__.Execute', FakeExecute)
+class TestMain(unittest.TestCase):
     def setUp(self):
         self.result = []
 
@@ -38,7 +39,6 @@ class TestMockMain(unittest.TestCase):
         self.main('-d', '-cgit:')
         assert yaml.safe_load(self.result[0]) == DRY_RUN
 
-    @mock.patch('backer.__main__.Execute', FakeExecute)
     @repo.test
     def test_git(self):
         with self.main('-c', 'git:') as execute:
@@ -52,7 +52,6 @@ class TestMockMain(unittest.TestCase):
             )
             assert set(files) == set('abc')
 
-    @mock.patch('backer.__main__.Execute', FakeExecute)
     def test_rsync(self):
         with TemporaryDirectory() as source, TemporaryDirectory() as target:
             ps = Path(source)
