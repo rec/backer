@@ -4,18 +4,18 @@ import threading
 class StoppableThread(threading.Thread):
     def __init__(self, target=None, daemon=True, **kwargs):
         super().__init__(target=target, daemon=daemon, **kwargs)
-        self.stopped_event = threading.Event()
+        self.stop_requested = threading.Event()
 
     def stop(self):
-        self.stopped_event.set()
+        self.stop_requested.set()
 
     @property
-    def running(self):
-        return not self.stopped_event.is_set()
+    def is_running(self):
+        return not self.stop_requested.is_set()
 
     def run(self):
         try:
-            while self.running and self._target:
+            while self.is_running and self._target:
                 self._target(*self._args, **self._kwargs)
         finally:
             # Avoid a refcycle if the thread is running a function with
@@ -46,5 +46,5 @@ class StoppableThreadList:
             i.join()
 
     @property
-    def running(self):
-        return not all(i.stopped_event.is_set() for i in self.threads)
+    def is_running(self):
+        return not all(i.is_running for i in self.threads)

@@ -15,8 +15,8 @@ class MainThread(stoppable_thread.StoppableThread):
         source = self.cfg.pop('source')
 
         for task_name, section in self.cfg.items():
-            if not self.running:
-                break
+            if not self.is_running:
+                return
 
             task = tasks.TASKS[task_name]
             for name, desc in section.items():

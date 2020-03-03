@@ -1,5 +1,5 @@
 from .stoppable_thread import StoppableThreadList
-from watchdog.observers import Observer
+from watchdog import observers
 import run_subprocess as rs
 import schedule as _schedule
 import time
@@ -61,3 +61,9 @@ class Execute(StoppableThreadList):
         while True:
             self._scheduler.run_pending()
             time.sleep(self.sleep)
+
+
+class Observer(observers.Observer):
+    @property
+    def is_running(self):
+        return self.should_keep_running()
