@@ -4,16 +4,9 @@ import time
 import yaml
 
 
-def main(args=None, print=print):
-    cfg = config.config(args)
-    if cfg.pop('dry_run'):
-        print(yaml.safe_dump(cfg))
-        return
-
+def _tasks(cfg, execute):
     target = cfg.pop('target')
     source = cfg.pop('source')
-
-    execute = Execute()
 
     for task_name, section in cfg.items():
         task = tasks.TASKS[task_name]
@@ -21,7 +14,19 @@ def main(args=None, print=print):
             desc['target'] = desc['target'] or target
             if 'source' in desc:
                 desc['source'] = desc['source'] or source
-            task(execute, name, **desc).start()
+            yield task(execute, name, **desc)
+
+
+def main(args=None, print=print):
+    execute = Execute()
+
+    cfg = config.config(args)
+    if cfg.pop('dry_run'):
+        print(yaml.safe_dump(cfg))
+        return
+
+    for task in _tasks(cfg, execute):
+        task.start()
 
     return execute
 
