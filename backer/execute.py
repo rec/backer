@@ -5,11 +5,11 @@ import schedule as _schedule
 import time
 
 
-class Execute:
+class Execute(StoppableThreadList):
     def __init__(self, sleep=1):
+        super().__init__()
         self._observer = self._scheduler = None
         self.sleep = sleep
-        self.threads = StoppableThreadList()
 
     def run(self, *cmd, out=None, err=None, **kwds):
         print('$', *cmd)
@@ -29,7 +29,7 @@ class Execute:
         """Call `callback` if any file recursively within `path` changes"""
         if not self._observer:
             self._observer = Observer()
-            self.threads.add_thread(self._observer)
+            self.add_thread(self._observer)
 
         class Handler:
             @staticmethod
@@ -43,7 +43,7 @@ class Execute:
         """Schedule a function"""
         if not self._scheduler:
             self._scheduler = _schedule.Scheduler()
-            self.threads.new_thread(self._scheduler_loop)
+            self.new_thread(self._scheduler_loop)
 
         every, *at = every.split('@', maxsplit=1)
         sched = getattr(self._scheduler.every(), every)
@@ -56,13 +56,6 @@ class Execute:
             sched = sched.at(at)
 
         sched.do(callback)
-
-    def __enter__(self):
-        self.threads.__enter__()
-        return self
-
-    def __exit__(self, type, value, traceback):
-        self.threads.__exit__(type, value, traceback)
 
     def _scheduler_loop(self):
         while True:

@@ -37,6 +37,7 @@ class StoppableThreadList:
     def __enter__(self):
         for i in self.threads:
             i.start()
+        return self
 
     def __exit__(self, type, value, traceback):
         for i in self.threads:
