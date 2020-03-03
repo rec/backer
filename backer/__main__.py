@@ -23,6 +23,7 @@ class MainThread(stoppable_thread.StoppableThread):
                 desc['target'] = desc['target'] or target
                 if 'source' in desc:
                     desc['source'] = desc['source'] or source
+
                 task(self.execute, name, **desc).start()
 
 
@@ -32,9 +33,8 @@ def main(args=None, print=print):
         print(yaml.safe_dump(cfg))
         return
 
-    mt = MainThread(cfg)
-    mt.run()
-    return mt.execute
+    with MainThread(cfg) as mt:
+        return mt.execute
 
 
 def backer():
@@ -44,13 +44,13 @@ def backer():
                 time.sleep(1)
 
         except KeyboardInterrupt:
-            print('KeyboardInterrupt detected - finishing off tasks')
+            print('KeyboardInterrupt detected')
 
         except Exception as e:
-            print('Unexpected exception detected - finishing off tasks', e)
+            print('Unexpected exception detected', e)
             raise e
 
-        print('Please wait')
+        print('Finishing off tasks - please wait')
 
     print('backer has shut down')
 

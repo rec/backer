@@ -22,6 +22,14 @@ class StoppableThread(threading.Thread):
             # an argument that has a member that points to the thread.
             del self._target, self._args, self._kwargs
 
+    def __enter__(self):
+        self.start()
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.stop()
+        self.join()
+
 
 class StoppableThreadList:
     def __init__(self):
