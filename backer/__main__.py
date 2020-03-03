@@ -4,7 +4,7 @@ import time
 import yaml
 
 
-def backer(args=None, print=print, block=True):
+def main(args=None, print=print):
     cfg = config.config(args)
     if cfg.pop('dry_run'):
         print(yaml.safe_dump(cfg))
@@ -23,15 +23,25 @@ def backer(args=None, print=print, block=True):
                 desc['source'] = desc['source'] or source
             task(execute, name, **desc).start()
 
-    if block:
-        with execute:
-            try:
-                while True:
-                    time.sleep(1)
-            except KeyboardInterrupt:
-                pass
-
     return execute
+
+
+def backer():
+    with main():
+        try:
+            while True:
+                time.sleep(1)
+
+        except KeyboardInterrupt:
+            print('KeyboardInterrupt detected - finishing off tasks')
+
+        except Exception as e:
+            print('Unexpected exception detected - finishing off tasks', e)
+            raise e
+
+        print('Please wait')
+
+    print('backer has shut down')
 
 
 if __name__ == '__main__':

@@ -42,9 +42,8 @@ class StoppableThreadList:
     def __exit__(self, type, value, traceback):
         for i in self.threads:
             i.stop()
-        if False:
-            for i in self.threads:
-                i.join()
+        for i in self.threads:
+            i.join()
 
     @property
     def running(self):
