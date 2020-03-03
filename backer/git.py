@@ -3,7 +3,6 @@ from queue import Queue, Empty
 import datetime
 import functools
 import os
-import threading
 import time
 from .task import Task
 
@@ -66,13 +65,12 @@ class Git(Task):
 
     def start(self):
         if self.create:
-            self.commit()
+            self._commit()
 
-        # TODO: this thread doesn't get stopped
-        threading.Thread(target=self.service_queue, daemon=True).start()
+        self.execute.new_thread(self._service_queue)
         self.execute.observe(self.queue.put, self.source)
 
-    def items_in_queue(self):
+    def _items_in_queue(self):
         items = []
         while True:
             try:
@@ -80,15 +78,14 @@ class Git(Task):
             except Empty:
                 return items
 
-    def service_queue(self):
-        while True:
-            if self.items_in_queue():
-                if self.file_event_window:
-                    time.sleep(self.file_event_window)
-                    self.items_in_queue()
-                self.commit()
+    def _service_queue(self):
+        if self._items_in_queue():
+            if self.file_event_window:
+                time.sleep(self.file_event_window)
+                self._items_in_queue()
+            self._commit()
 
-    def commit(self):
+    def _commit(self):
         if not (self.source / '.git').is_dir():
             if not self.create:
                 raise ValueError('%s is not a git directory' % self.source)
