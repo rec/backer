@@ -1,4 +1,4 @@
-from .stoppable_thread import StoppableThreadList
+from .stoppable_thread import Stoppable, StoppableThreadList
 from watchdog import observers
 import run_subprocess as rs
 import schedule as _schedule
@@ -63,7 +63,16 @@ class Execute(StoppableThreadList):
             time.sleep(self.sleep)
 
 
-class Observer(observers.Observer):
-    @property
-    def is_running(self):
-        return self.should_keep_running()
+class Observer(observers.Observer, Stoppable):
+    def __init__(self, *args, **kwds):
+        Observer.__init__(self, *args, **kwds)
+        Stoppable.__init__(self)
+
+    def start(self):
+        if not self.is_started:
+            Stoppable.start(self)
+            Observer.start(self)
+
+    def stop(self):
+        Stoppable.stop(self)
+        Observer.stop(self)

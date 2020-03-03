@@ -5,17 +5,22 @@ import yaml
 
 
 class MainThread(stoppable_thread.StoppableThread):
-    def __init__(self, cfg):
+    def __init__(self, args):
         super().__init__()
+        cfg = config.config(args)
+        self.dry_run = cfg.pop('dry_run')
         self.cfg = cfg
         self.execute = Execute()
 
     def run(self):
+        if self.dry_run:
+            return
+
         target = self.cfg.pop('target')
         source = self.cfg.pop('source')
 
         for task_name, section in self.cfg.items():
-            if not self.is_running:
+            if self.is_stopped:
                 return
 
             task = tasks.TASKS[task_name]
@@ -25,20 +30,35 @@ class MainThread(stoppable_thread.StoppableThread):
                     desc['source'] = desc['source'] or source
 
                 task(self.execute, name, **desc).start()
+        # self.execute.start()
+
+    # def stop(self):
+    #     super().stop()
+    #     self.execute.stop()
+
+    # def join(self):
+    #     if self.is_started:
+    #         super().join()
+    #     if self.execute.is_started:
+    #         self.execute.join()
 
 
 def main(args=None, print=print):
-    cfg = config.config(args)
-    if cfg.pop('dry_run'):
-        print(yaml.safe_dump(cfg))
+    main = MainThread(args)
+    if main.dry_run:
+        print(yaml.safe_dump(main.cfg))
         return
 
-    with MainThread(cfg) as mt:
-        return mt.execute
+    with main:
+        return main.execute
 
 
 def backer():
-    with main():
+    with MainThread() as mt:
+        if mt.dry_run:
+            print(yaml.safe_dump(mt.cfg))
+            return
+
         try:
             while True:
                 time.sleep(1)
