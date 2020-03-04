@@ -30,17 +30,17 @@ class MainThread(stoppable_thread.StoppableThread):
                     desc['source'] = desc['source'] or source
 
                 task(self.execute, name, **desc).start()
-        # self.execute.start()
+        self.execute.start()
 
-    # def stop(self):
-    #     super().stop()
-    #     self.execute.stop()
+    def stop(self):
+        super().stop()
+        self.execute.stop()
 
-    # def join(self):
-    #     if self.is_started:
-    #         super().join()
-    #     if self.execute.is_started:
-    #         self.execute.join()
+    def join(self):
+        if self.is_started:
+            super().join()
+        if False and self.execute.is_started:
+            self.execute.join()
 
 
 def main(args=None, print=print):

@@ -43,7 +43,7 @@ class Execute(StoppableThreadList):
         """Schedule a function"""
         if not self._scheduler:
             self._scheduler = _schedule.Scheduler()
-            self.new_thread(self._scheduler_loop)
+            self.new_thread(self._scheduler_loop, name='scheduler_loop')
 
         every, *at = every.split('@', maxsplit=1)
         sched = getattr(self._scheduler.every(), every)
@@ -64,9 +64,9 @@ class Execute(StoppableThreadList):
 
 
 class Observer(observers.Observer, Stoppable):
-    def __init__(self, *args, **kwds):
+    def __init__(self, *args, name='observer', **kwds):
         Observer.__init__(self, *args, **kwds)
-        Stoppable.__init__(self)
+        Stoppable.__init__(self, name)
 
     def start(self):
         if not self.is_started:

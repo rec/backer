@@ -67,7 +67,7 @@ class Git(Task):
         if self.create:
             self._commit()
 
-        self.execute.new_thread(self._service_queue)
+        self.execute.new_thread(self._service_queue, 'service_queue')
         self.execute.observe(self.queue.put, self.source)
 
     def _items_in_queue(self):

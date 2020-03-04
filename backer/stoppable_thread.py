@@ -2,9 +2,10 @@ from threading import Event, Thread
 
 
 class Stoppable:
-    def __init__(self):
+    def __init__(self, name=None):
         self.start_requested = Event()
         self.stop_requested = Event()
+        self.name = name or self.__class__.__name__
 
     def start(self):
         self.start_requested.set()
@@ -30,9 +31,9 @@ class Stoppable:
 
 
 class StoppableThread(Thread, Stoppable):
-    def __init__(self, target=None, daemon=True, **kwargs):
-        Stoppable.__init__(self)
+    def __init__(self, target=None, name=None, daemon=True, **kwargs):
         Thread.__init__(self, target=target, daemon=daemon, **kwargs)
+        Stoppable.__init__(self, name)
 
     def start(self):
         if not self.is_started:
@@ -50,8 +51,8 @@ class StoppableThread(Thread, Stoppable):
 
 
 class StoppableThreadList(Stoppable):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, name=None):
+        super().__init__(name)
         self.threads = []
 
     def add_thread(self, thread):
