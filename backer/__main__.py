@@ -5,7 +5,7 @@ import yaml
 
 
 class MainThread(stoppable_thread.StoppableThread):
-    def __init__(self, args):
+    def __init__(self, args=None):
         super().__init__()
         cfg = config.config(args)
         self.dry_run = cfg.pop('dry_run')

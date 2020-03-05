@@ -37,7 +37,8 @@ class Execute(StoppableThreadList):
                 if not event.is_directory:
                     callback(event)
 
-        self._observer.schedule(Handler(), path, recursive=True)
+        # See https://github.com/gorakhargosh/watchdog/issues/651
+        self._observer.schedule(Handler(), str(path), recursive=True)
 
     def schedule(self, callback, every):
         """Schedule a function"""
@@ -65,14 +66,14 @@ class Execute(StoppableThreadList):
 
 class Observer(observers.Observer, Stoppable):
     def __init__(self, *args, name='observer', **kwds):
-        Observer.__init__(self, *args, **kwds)
+        observers.Observer.__init__(self, *args, **kwds)
         Stoppable.__init__(self, name)
 
     def start(self):
         if not self.is_started:
             Stoppable.start(self)
-            Observer.start(self)
+            observers.Observer.start(self)
 
     def stop(self):
         Stoppable.stop(self)
-        Observer.stop(self)
+        observers.Observer.stop(self)
