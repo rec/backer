@@ -73,9 +73,9 @@ class StoppableThreadList(Stoppable):
         for i in self.threads:
             i.stop()
 
-    def join(self):
+    def join(self, timeout=None):
         for i in self.threads:
-            i.join()
+            i.join(timeout=timeout)
 
     def is_alive(self):
         return any(i.is_alive() for i in self.threads)
