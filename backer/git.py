@@ -4,6 +4,7 @@ from queue import Queue, Empty
 import datetime
 import functools
 import os
+import sys
 import time
 
 
@@ -46,7 +47,7 @@ class Git(Task):
 
         git_init:
           If `source` is not a Git repository, then if `git_init` is
-          true, then `git init` will be called, otherwise ValueError is raised
+          True, then `git init` will be called, otherwise ValueError is raised
 
         add_unknown_files:
           If True, unknown files are automatically `git add`'ed
@@ -63,11 +64,14 @@ class Git(Task):
         source = source or '.'
         self.source = Path(os.path.expandvars(source)).expanduser().resolve()
         self.git = functools.partial(execute.run, 'git', cwd=str(source))
-        self.git_init = git_init or {}
-        self.remotes = remotes or {}
+        self.git_init = git_init
+        self.remotes = remotes
         self.add_unknown_files = add_unknown_files
         self.file_event_window = file_event_window
         self.commit_message = commit_message
+
+        if not (self.git_init or (self.source / '.git').is_dir()):
+            raise ValueError(_ERROR_NO_GIT_DIR % self.source)
 
     def start(self):
         if self.create_at_startup:
@@ -91,14 +95,45 @@ class Git(Task):
                 self._items_in_queue()
             self._commit()
 
-    def _commit(self):
-        if not (self.source / '.git').is_dir():
-            if not self.git_init:
-                raise ValueError('%s is not a git directory' % self.source)
-            self.git('init')
-            for name, remote in self.remotes.items():
-                self.git('remote', 'add', name, remote)
+    def _initialize(self):
+        if isinstance(self.remotes, dict):
+            requested = self.remotes
+        else:
+            requested = {k: None for k in self.remotes or ()}
+        remotes = list(requested)
 
+        if not (self.source / '.git').is_dir():
+            self.git('init')
+            self.git('add', '.')
+            for remote, url in requested.items():
+                if url:
+                    self.git('remote', 'add', remote, url)
+                else:
+                    _warn('Unable to create remote', remote)
+                    remotes.remove(remote)
+            return remotes
+
+        if self.remotes is None:
+            return self.git('remote')
+
+        existing = [i.split()[:2] for i in self.git('remote', '-v')]
+        existing = {k: v for k, v in existing}
+
+        for remote, url in requested.items():
+            existing_url = existing.get(remote)
+            if url is None:
+                if existing_url is None:
+                    _warn('No remote named', remote)
+                    remotes.remove(remote)
+
+            elif existing_url != url:
+                _warn('Changing remote from', existing_url, 'to', url)
+                self.git('remote', 'set-url', remote, url)
+
+        return remotes
+
+    def _commit(self):
+        remotes = self._initialize()
         lines = self.git('status', '--porcelain')
         if not self.add_unknown_files:
             lines = [i for i in lines if not i.startwith('??')]
@@ -112,5 +147,12 @@ class Git(Task):
             else:
                 msg = self.commit_message
             self.git('commit', '-am', msg)
-            for remote in self.remotes:
-                self.git('push', self.remote)
+            for remote in remotes:
+                self.git('push', remote)
+
+
+def _warn(*args, **kwds):
+    print('WARNING:', *args, **kwds, file=sys.stderr)
+
+
+_ERROR_NO_GIT_DIR = 'Not a git directory and `git_init` is not set: %s'
