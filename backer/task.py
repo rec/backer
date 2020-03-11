@@ -3,10 +3,10 @@ import shlex
 
 
 class Task:
-    def __init__(self, execute, name, create):
+    def __init__(self, execute, name, create_at_startup):
         self.execute = execute
         self.name = name
-        self.create = create
+        self.create_at_startup = create_at_startup
 
     def start(self):
         raise NotImplementedError
@@ -19,7 +19,7 @@ class Task:
 class ScheduledCommandTask(Task):
     COMMAND = '(none)'
 
-    def __init__(self, execute, name, target, create, every, flags):
+    def __init__(self, execute, name, target, create_at_startup, every, flags):
         """
         target:
             The root directory to back up to
@@ -30,11 +30,11 @@ class ScheduledCommandTask(Task):
         flags:
             Command line flags
 
-        create:
-            If True, immediately create an backup if there is none,
+        create_at_startup:
+            If True, immediately create a backup if there is none,
             otherwise wait until the scheduled time for the first backup
         """
-        super().__init__(execute, name, create)
+        super().__init__(execute, name, create_at_startup)
         self.target = Path(target)
         self.task_dir = self.target / name
         self.every = every
@@ -48,7 +48,7 @@ class ScheduledCommandTask(Task):
         self.build_command_line()
         if not self.task_dir.exists():
             self.task_dir.mkdir(parents=True)
-            if self.create:
+            if self.create_at_startup:
                 self.run()
 
         self.execute.schedule(self.run, self.every)
@@ -77,7 +77,7 @@ class DatabaseTask(ScheduledCommandTask):
         execute,
         name,
         target=None,
-        create=True,
+        create_at_startup=True,
         every='day',
         flags='',
         user=None,
@@ -88,7 +88,9 @@ class DatabaseTask(ScheduledCommandTask):
         tables=None,
         filename=None,
     ):
-        super().__init__(execute, name, target, create, every, flags)
+        super().__init__(
+            execute, name, target, create_at_startup, every, flags
+        )
         self.db_flags = {
             'user': user,
             'password': password,

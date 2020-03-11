@@ -13,7 +13,7 @@ DRY_RUN = {
     'git': {
         '0': {
             'add_unknown_files': True,
-            'create': True,
+            'create_at_startup': True,
             'commit_message': '%Y-%m-%dT%H:%M%SZ',
             'remotes': None,
             'source': None,

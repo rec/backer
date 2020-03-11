@@ -14,7 +14,7 @@ class Git(Task):
         name,
         target=None,
         source=None,
-        create=True,
+        create_at_startup=True,
         remotes=None,
         add_unknown_files=True,
         file_event_window=0.05,
@@ -39,9 +39,9 @@ class Git(Task):
         remotes:
           A dictionary mapping remote names to remote URLs
 
-        create:
-          If `source` is not a Git repository, then if `create` is true, then
-          `create init` will be called, otherwise an ValueError is raised
+        create_at_startup:
+          If `source` is not a Git repository, then if `create_at_startup` is
+          true, then `git init` will be called, otherwise ValueError is raised
 
         add_unknown_files:
           If True, unknown files are automatically `git add`'ed
@@ -53,7 +53,7 @@ class Git(Task):
         commit_message:
           A strftime-style format string for commit messages
         """
-        super().__init__(execute, name, create)
+        super().__init__(execute, name, create_at_startup)
         self.queue = Queue()
         source = source or '.'
         self.source = Path(os.path.expandvars(source)).expanduser().resolve()
@@ -64,7 +64,7 @@ class Git(Task):
         self.commit_message = commit_message
 
     def start(self):
-        if self.create:
+        if self.create_at_startup:
             self._commit()
 
         self.execute.new_thread(self._service_queue, 'service_queue')
@@ -87,7 +87,7 @@ class Git(Task):
 
     def _commit(self):
         if not (self.source / '.git').is_dir():
-            if not self.create:
+            if not self.create_at_startup:
                 raise ValueError('%s is not a git directory' % self.source)
             self.git('init')
             for name, remote in self.remotes.items():

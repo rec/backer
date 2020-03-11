@@ -17,7 +17,7 @@ class TestConfig(TestCase):
                     'target': None,
                     'remotes': None,
                     'add_unknown_files': True,
-                    'create': True,
+                    'create_at_startup': True,
                     'commit_message': '%Y-%m-%dT%H:%M%SZ',
                     'file_event_window': 0.05,
                 }
@@ -62,7 +62,7 @@ EXPECTED = {
     'dry_run': False,
     'rsync': {
         'hourly': {
-            'create': True,
+            'create_at_startup': True,
             'every': 'hour@3:32',
             'flags': '--archive -v --exclude=.git',
             'source': None,
