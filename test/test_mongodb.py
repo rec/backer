@@ -12,7 +12,8 @@ class TestMongodb(patch.MainTester):
         sub = dict(DATABASE, databases='foo', tables='bing')
         config = {'mongodb': {'0': sub}}
         actual, expected = self._test(
-            config, MONGODB, '--db=foo', '--collection=bing')
+            config, MONGODB, '--db=foo', '--collection=bing'
+        )
         assert actual == expected
 
 

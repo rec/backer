@@ -41,7 +41,7 @@ class MainTester(unittest.TestCase):
         cfg = yaml.safe_dump(config)
         with TemporaryDirectory() as td:
             with self.main(td, '-c', cfg) as ex:
-                ((cmd, *_), ) = ex.runs
+                ((cmd, *_),) = ex.runs
                 expected = ' '.join((expected.format(tmpdir=td), *args))
                 actual = ' '.join(cmd)
                 return actual, expected
