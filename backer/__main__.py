@@ -43,16 +43,6 @@ class MainThread(stoppable_thread.StoppableThread):
             self.execute.join()
 
 
-def main(args=None, print=print):
-    main = MainThread(args)
-    if main.dry_run:
-        print(yaml.safe_dump(main.cfg))
-        return
-
-    with main:
-        return main.execute
-
-
 def backer():
     with MainThread() as mt:
         if mt.dry_run:
