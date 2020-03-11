@@ -7,6 +7,9 @@ import os
 import sys
 import time
 
+# How long before timing out the service queue?
+QUEUE_TIMEOUT = 1
+
 
 class Git(Task):
     def __init__(
@@ -80,20 +83,16 @@ class Git(Task):
         self.execute.new_thread(self._service_queue, 'service_queue')
         self.execute.observe(self.queue.put, self.source)
 
-    def _items_in_queue(self):
-        items = []
-        while True:
-            try:
-                items.append(self.queue.get(block=False))
-            except Empty:
-                return items
-
     def _service_queue(self):
-        if self._items_in_queue():
-            if self.file_event_window:
-                time.sleep(self.file_event_window)
-                self._items_in_queue()
-            self._commit()
+        try:
+            self.queue.get(timeout=QUEUE_TIMEOUT)
+        except Empty:
+            return
+        if self.file_event_window:
+            time.sleep(self.file_event_window)
+        with self.queue.mutex:
+            self.queue.queue.clear()
+        self._commit()
 
     def _initialize(self):
         if isinstance(self.remotes, dict):
