@@ -1,10 +1,10 @@
+from .task import Task
 from pathlib import Path
 from queue import Queue, Empty
 import datetime
 import functools
 import os
 import time
-from .task import Task
 
 
 class Git(Task):
@@ -15,6 +15,7 @@ class Git(Task):
         target=None,
         source=None,
         create_at_startup=True,
+        git_init=True,
         remotes=None,
         add_unknown_files=True,
         file_event_window=0.05,
@@ -36,11 +37,15 @@ class Git(Task):
         target:
           (not used)
 
+        create_at_startup:
+            If True, immediately create a backup if there is none,
+            otherwise wait until the scheduled time for the first backup
+
         remotes:
           A dictionary mapping remote names to remote URLs
 
-        create_at_startup:
-          If `source` is not a Git repository, then if `create_at_startup` is
+        git_init:
+          If `source` is not a Git repository, then if `git_init` is
           true, then `git init` will be called, otherwise ValueError is raised
 
         add_unknown_files:
@@ -58,6 +63,7 @@ class Git(Task):
         source = source or '.'
         self.source = Path(os.path.expandvars(source)).expanduser().resolve()
         self.git = functools.partial(execute.run, 'git', cwd=str(source))
+        self.git_init = git_init or {}
         self.remotes = remotes or {}
         self.add_unknown_files = add_unknown_files
         self.file_event_window = file_event_window
@@ -87,7 +93,7 @@ class Git(Task):
 
     def _commit(self):
         if not (self.source / '.git').is_dir():
-            if not self.create_at_startup:
+            if not self.git_init:
                 raise ValueError('%s is not a git directory' % self.source)
             self.git('init')
             for name, remote in self.remotes.items():

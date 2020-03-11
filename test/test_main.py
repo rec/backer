@@ -15,6 +15,7 @@ DRY_RUN = {
             'add_unknown_files': True,
             'create_at_startup': True,
             'commit_message': '%Y-%m-%dT%H:%M%SZ',
+            'git_init': True,
             'remotes': None,
             'source': None,
             'target': None,

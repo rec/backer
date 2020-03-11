@@ -18,6 +18,7 @@ class TestConfig(TestCase):
                     'remotes': None,
                     'add_unknown_files': True,
                     'create_at_startup': True,
+                    'git_init': True,
                     'commit_message': '%Y-%m-%dT%H:%M%SZ',
                     'file_event_window': 0.05,
                 }
