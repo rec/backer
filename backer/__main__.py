@@ -1,21 +1,16 @@
-from . import config, stoppable_thread, tasks
+from . import config, signal_handler, stoppable_thread, tasks
 from .execute import Execute
 import time
 import yaml
 
 
 class MainThread(stoppable_thread.StoppableThread):
-    def __init__(self, args=None):
+    def __init__(self, cfg):
         super().__init__()
-        cfg = config.config(args)
-        self.dry_run = cfg.pop('dry_run')
         self.cfg = cfg
         self.execute = Execute()
 
     def run(self):
-        if self.dry_run:
-            return
-
         target = self.cfg.pop('target')
         source = self.cfg.pop('source')
 
@@ -44,26 +39,43 @@ class MainThread(stoppable_thread.StoppableThread):
             self.execute.join()
 
 
+class Main:
+    def __init__(self, args=None):
+        self.cfg = config.config(args)
+        self.dry_run = self.cfg.pop('dry_run')
+        self.thread = None
+
+    def new_thread(self):
+        return MainThread(dict(self.cfg))
+
+    def stop(self):
+        self.thread and self.thread.stop()
+
+    def backer(self):
+        with self.new_thread() as self.thread:
+            try:
+                while not self.thread.is_stopped:
+                    time.sleep(1)
+
+            except KeyboardInterrupt:
+                print('KeyboardInterrupt detected')
+
+            except Exception as e:
+                print('Unexpected exception detected', e)
+                raise e
+
+            print('Finishing off tasks - please wait')
+        self.thread = None
+        print('Tasks finished')
+
+
 def backer():
-    with MainThread() as mt:
-        if mt.dry_run:
-            print(yaml.safe_dump(mt.cfg))
-            return
+    main = Main()
+    if main.dry_run:
+        print(yaml.safe_dump(main.cfg))
+        return
 
-        try:
-            while True:
-                time.sleep(1)
-
-        except KeyboardInterrupt:
-            print('KeyboardInterrupt detected')
-
-        except Exception as e:
-            print('Unexpected exception detected', e)
-            raise e
-
-        print('Finishing off tasks - please wait')
-
-    print('backer has shut down')
+    signal_handler.run(main.backer, main.stop)
 
 
 if __name__ == '__main__':

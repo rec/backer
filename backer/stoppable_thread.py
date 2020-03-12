@@ -65,7 +65,7 @@ class StoppableThreadList(Stoppable):
     def start(self):
         super().start()
         for i in self.threads:
-            if not i.start_requested.is_set():
+            if not i.is_started:
                 i.start()
 
     def stop(self):

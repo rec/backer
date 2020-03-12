@@ -1,5 +1,5 @@
 from backer import execute
-from backer.__main__ import MainThread
+from backer.__main__ import Main
 from tempfile import TemporaryDirectory
 from unittest import mock
 import time
@@ -35,13 +35,14 @@ class MainTester(unittest.TestCase):
         self.result = []
 
     def main(self, *args):
-        main = MainThread(args)
+        main = Main(args)
         if main.dry_run:
             self.result.append(yaml.safe_dump(main.cfg))
             return
 
-        with main:
-            return main.execute
+        main_thread = main.new_thread()
+        with main_thread:
+            return main_thread.execute
 
     def _test(self, config, expected, *args):
         cfg = yaml.safe_dump(config)
