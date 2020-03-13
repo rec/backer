@@ -32,7 +32,7 @@ class Rsync(ScheduledCommandTask):
            The directory to back up - default is the current working directory
         """
         super().__init__(
-            execute, name, target, create_at_startup, every, flags
+            execute, name, create_at_startup, target, every, flags
         )
         self.source = source
 

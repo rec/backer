@@ -5,9 +5,14 @@ import shlex
 
 @dataclass
 class Task:
-    execute: object
-    name: str
-    create_at_startup: bool
+    """
+    create_at_startup:
+        If True, immediately create a backup if there is none,
+        otherwise wait until the scheduled time for the first backup
+    """
+    execute: object = None
+    name: str = ''
+    create_at_startup: bool = True
 
     def start(self):
         raise NotImplementedError
@@ -17,35 +22,25 @@ class Task:
         return shlex.split(s) if isinstance(s, str) else s or []
 
 
+@dataclass
 class ScheduledCommandTask(Task):
     COMMAND = '(none)'
+    DEFAULT_EVERY = ''
 
-    def __init__(self, execute, name, target, create_at_startup, every, flags):
-        """
-        target:
-            The root directory to back up to
+    target: Path = None
+    every: str = ''
+    flags: str = ''
 
-        every:
-            When to schedule this
-
-        flags:
-            Command line flags
-
-        create_at_startup:
-            If True, immediately create a backup if there is none,
-            otherwise wait until the scheduled time for the first backup
-        """
-        super().__init__(execute, name, create_at_startup)
-        self.target = Path(target)
-        self.task_dir = self.target / name
-        self.every = every
-        self.flags = self.split(flags)
-        self.command_line = [self.COMMAND]
+    def __post_init__(self):
+        self.target = Path(self.target)
+        self.task_dir = self.target / self.name
+        self.every = self.every or self.DEFAULT_EVERY
 
     def build_command_line(self):
-        self.add(*self.flags)
+        self.add(*self.split(self.flags))
 
     def start(self):
+        self.command_line = [self.COMMAND]
         self.build_command_line()
         if not self.task_dir.exists():
             self.task_dir.mkdir(parents=True)
@@ -90,7 +85,7 @@ class DatabaseTask(ScheduledCommandTask):
         filename=None,
     ):
         super().__init__(
-            execute, name, target, create_at_startup, every, flags
+            execute, name, create_at_startup, target, every, flags
         )
         self.db_flags = {
             'user': user,
