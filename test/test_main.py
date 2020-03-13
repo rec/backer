@@ -17,7 +17,7 @@ DRY_RUN = {
             'commit_message': '%Y-%m-%dT%H:%M%SZ',
             'git_init': True,
             'remotes': None,
-            'source': '.',
+            'source': None,
             'target': None,
             'file_event_window': 0.05,
         }
