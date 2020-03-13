@@ -14,42 +14,12 @@ QUEUE_TIMEOUT = 1
 
 @dataclass
 class Git(Task):
-    """"
+    """
     `git commit` automatically on any change within a directory.
 
     Whenever any file changes within the `source` directory recursively,
     attempt to make a git commit, and if this succeeds, push it to all
     remotes.
-
-    name:
-      name of git backup
-
-    source:
-      source directory to be backed up (default is current directory)
-
-    target:
-      (not used)
-
-    create_at_startup:
-        If True, immediately create a backup if there is none,
-        otherwise wait until the scheduled time for the first backup
-
-    remotes:
-      A dictionary mapping remote names to remote URLs
-
-    git_init:
-      If `source` is not a Git repository, then if `git_init` is
-      True, then `git init` will be called, otherwise ValueError is raised
-
-    add_unknown_files:
-      If True, unknown files are automatically `git add`'ed
-
-    file_event_window:
-      If `file_event_window` is non-zero, then all file events during that
-      time window (in seconds) are consolidated into a single git commit
-
-    commit_message:
-      A strftime-style format string for commit messages
     """
 
     target: str = None
@@ -143,6 +113,28 @@ class Git(Task):
             self.git('commit', '-am', msg)
             for remote in remotes:
                 self.git('push', remote)
+
+    __dataclass_docs__ = """
+source: >-
+    source directory to be backed up (default is current directory)
+
+remotes: >-
+  A dictionary mapping remote names to remote URLs
+
+git_init: >-
+  If `source` is not a Git repository, then if `git_init` is
+  True, then `git init` will be called, otherwise ValueError is raised
+
+add_unknown_files: >-
+  If True, unknown files are automatically `git add`'ed
+
+file_event_window: >-
+  If `file_event_window` is non-zero, then all file events during that
+  time window (in seconds) are consolidated into a single git commit
+
+commit_message: >-
+  A strftime-style format string for commit messages
+"""
 
 
 def _warn(*args, **kwds):

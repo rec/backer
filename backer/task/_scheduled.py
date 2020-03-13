@@ -40,3 +40,15 @@ class ScheduledCommandTask(Task):
                 if value is not True:
                     flag = '%s=%s' % (flag, value)
                 self.add(flag)
+
+    __dataclass_docs__ = """
+target: >-
+    The target directory to write the backup to
+
+every: >-
+    How often to perform this backup
+
+flags: >-
+    Command line flags to the command, either as a single string that will be
+    split by shlex, or as a list of string arguments
+"""

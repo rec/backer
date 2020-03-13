@@ -13,3 +13,8 @@ class Rsync(ScheduledCommandTask):
     def build_command_line(self):
         self.add(self.source or '.', self.task_dir)
         super().build_command_line()
+
+    __dataclass_docs__ = """
+source: >-
+    source directory to be backed up (default is current directory)
+"""

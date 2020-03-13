@@ -4,10 +4,10 @@ from ._scheduled import dataclass, ScheduledCommandTask
 @dataclass
 class DatabaseTask(ScheduledCommandTask):
     every: str = 'day'  # override
+    host: str = None
+    port: str = None
     user: str = None
     password: str = None
-    port: str = None
-    host: str = None
     databases: str = None
     tables: str = None
     filename: str = None
@@ -43,3 +43,29 @@ class DatabaseTask(ScheduledCommandTask):
         super().run()
         if self.out_filename.exists():
             self.out_filename.rename(self.filename)
+
+    __dataclass_docs__ = """
+host: >-
+    The URL host for this database (blank means localhost)
+
+port: >-
+    The numeric port on which to contact the database
+
+user: >-
+    The database user
+
+password: >-
+    The password for the database user.  You can use variables to read
+    passwords from the environment or .env file without storing them in
+    config files.
+
+databases: >-
+    A list of databases to back up.  Blank means "backup all databases".
+
+tables: >-
+    A list of tables to back up.  Blank means "backup all tables".
+    tables: and databases: cannot both be set
+
+filename: >-
+    The name of the backup file (defaults to <database>.sql
+"""
