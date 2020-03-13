@@ -11,8 +11,8 @@ class ScheduledCommandTask(Task):
     COMMAND = '(none)'
 
     def __post_init__(self):
-        self.target = self.target and Path(self.target)
-        self.task_dir = self.target and (self.target / self.name)
+        self.target = Path(self.target)
+        self.task_dir = self.target / self.name
 
     def build_command_line(self):
         self.add(*self.split(self.flags))

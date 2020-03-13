@@ -1,7 +1,5 @@
 from . import git, mongodb, mysql, postgresql, rsync
 
-OMIT_FROM_CONFIG = 'execute', 'name'
-
 
 def _make():
     tasks, defaults = {}, {}

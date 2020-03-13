@@ -32,13 +32,8 @@ class DatabaseTask(ScheduledCommandTask):
         if not self.filename:
             self.filename = self.__class__.__name__.lower() + self.SUFFIX
 
-        if self.task_dir:
-            self.out_filename = self.task_dir / (
-                self.filename + self.TEMP_SUFFIX
-            )
-            self.filename = self.task_dir / self.filename
-        else:
-            self.out_file = None
+        self.out_filename = self.task_dir / (self.filename + self.TEMP_SUFFIX)
+        self.filename = self.task_dir / self.filename
 
     def build_command_line(self):
         self.add(**self.db_flags)
