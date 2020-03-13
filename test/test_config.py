@@ -2,9 +2,11 @@ from backer import config
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
+from backer import task
 
-
-SECTIONS = ['git:', 'mongodb:', 'mysql:', 'postgresql:', 'rsync:']
+SECTIONS = ('git', 'mongodb', 'mysql', 'postgresql', 'rsync')
+TASKS = {s: task.task_class(s) for s in SECTIONS}
+LINE = ':\n'.join(TASKS) + ':'
 
 
 class TestConfig(TestCase):
@@ -27,13 +29,13 @@ class TestConfig(TestCase):
         assert expected == actual
 
     def test_all(self):
-        actual = config._combine(['\n'.join(SECTIONS)])
-        expected = {k: {'0': v.defaults()} for k, v in config.TASKS.items()}
+        actual = config._combine([LINE])
+        expected = {k: {'0': v.defaults()} for k, v in TASKS.items()}
         assert expected == actual
 
     def test_parts(self):
-        actual = config._combine(SECTIONS)
-        expected = {k: {'0': v.defaults()} for k, v in config.TASKS.items()}
+        actual = config._combine([LINE])
+        expected = {k: {'0': v.defaults()} for k, v in TASKS.items()}
         assert expected == actual
 
     def test_config(self):

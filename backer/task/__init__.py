@@ -1,13 +1,15 @@
-from . import git, mongodb, mysql, postgresql, rsync
+import importlib
 
 
-def _make():
-    tasks = {}
-    for module in git, mongodb, mysql, postgresql, rsync:
-        name = module.__name__.split('.')[-1]
-        tasks[name] = getattr(module, name.capitalize())
+def task_class(name):
+    if '.' not in name:
+        name = '%s.%s' % (__package__, name)
 
-    return tasks
-
-
-TASKS = _make()
+    mod = importlib.import_module(name)
+    r = name.split('.')[-1].lower()
+    items = [v for k, v in vars(mod).items() if callable(v) and k.lower() == r]
+    if len(items) < 1:
+        raise ValueError('No task in ' + name)
+    if len(items) > 1:
+        raise ValueError('Ambiguous task in ' + name)
+    return items[0]
