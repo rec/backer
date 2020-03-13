@@ -7,7 +7,7 @@ configure the program, otherwise stdin is read.
 """
 
 from . import variables
-from .tasks import DEFAULTS
+from .task import DEFAULTS
 from pathlib import Path
 import argparse
 import os

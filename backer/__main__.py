@@ -1,4 +1,5 @@
-from . import config, signal_handler, stoppable_thread, tasks
+from . import config, signal_handler, stoppable_thread
+from .task import TASKS
 from .execute import Execute
 import time
 import yaml
@@ -18,7 +19,7 @@ class MainThread(stoppable_thread.StoppableThread):
             if self.is_stopped:
                 return
 
-            task = tasks.TASKS[task_name]
+            task = TASKS[task_name]
             for name, desc in section.items():
                 desc['target'] = desc['target'] or target
                 if 'source' in desc:
