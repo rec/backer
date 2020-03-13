@@ -30,14 +30,10 @@ class ScheduledCommandTask(Task):
     flags: str = ''
 
     COMMAND = '(none)'
-    DEFAULT_EVERY = ''
-    DEFAULT_FLAGS = ''
 
     def __post_init__(self):
         self.target = self.target and Path(self.target)
         self.task_dir = self.target and (self.target / self.name)
-        self.every = self.every or self.DEFAULT_EVERY
-        self.flags = self.flags or self.DEFAULT_FLAGS
 
     def build_command_line(self):
         self.add(*self.split(self.flags))
@@ -69,6 +65,7 @@ class ScheduledCommandTask(Task):
 
 @dataclass
 class DatabaseTask(ScheduledCommandTask):
+    every: str = 'day'  # override
     user: str = None
     password: str = None
     port: str = None
@@ -79,7 +76,6 @@ class DatabaseTask(ScheduledCommandTask):
 
     SUFFIX = '.sql'
     TEMP_SUFFIX = '.tmp'
-    DEFAULT_EVERY = 'day'
 
     def __post_init__(self):
         super().__post_init__()
