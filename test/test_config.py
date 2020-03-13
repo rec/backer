@@ -28,16 +28,12 @@ class TestConfig(TestCase):
 
     def test_all(self):
         actual = config._combine(['\n'.join(SECTIONS)])
-        expected = {k: {'0': v} for k, v in config.DEFAULTS.items()}
+        expected = {k: {'0': v.defaults()} for k, v in config.TASKS.items()}
         assert expected == actual
-
-        # Make sure they aren't the same
-        actual['git'] = {}
-        assert config.DEFAULTS != actual
 
     def test_parts(self):
         actual = config._combine(SECTIONS)
-        expected = {k: {'0': v} for k, v in config.DEFAULTS.items()}
+        expected = {k: {'0': v.defaults()} for k, v in config.TASKS.items()}
         assert expected == actual
 
     def test_config(self):

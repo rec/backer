@@ -2,14 +2,12 @@ from . import git, mongodb, mysql, postgresql, rsync
 
 
 def _make():
-    tasks, defaults = {}, {}
+    tasks = {}
     for module in git, mongodb, mysql, postgresql, rsync:
         name = module.__name__.split('.')[-1]
-        cls = getattr(module, name.capitalize())
-        tasks[name] = cls
-        defaults[name] = cls.defaults()
+        tasks[name] = getattr(module, name.capitalize())
 
-    return tasks, defaults
+    return tasks
 
 
-TASKS, DEFAULTS = _make()
+TASKS = _make()

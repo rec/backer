@@ -7,7 +7,7 @@ configure the program, otherwise stdin is read.
 """
 
 from . import variables
-from .task import DEFAULTS
+from .task import TASKS
 from pathlib import Path
 import argparse
 import os
@@ -54,9 +54,10 @@ def _combine(sections):
         section = _read_config(section)
         for section_name, tasks in section.items():
             tasks = tasks or {'0': None}
-            default = DEFAULTS.get(section_name)
-            if not default:
+            task_class = TASKS.get(section_name)
+            if not task_class:
                 raise KeyError(section_name, 'Not a known task name')
+            default = task_class.defaults()
 
             section_config = config.setdefault(section_name, {})
             for task_name, task in (tasks or {}).items():
