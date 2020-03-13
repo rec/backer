@@ -6,24 +6,23 @@ import yaml
 
 
 class MainThread(stoppable_thread.StoppableThread):
-    def __init__(self, cfg):
+    def __init__(self, target=None, source=None, **cfg):
         super().__init__()
         self.cfg = cfg
         self.execute = Execute()
+        self.target = target
+        self.source = source
 
     def run(self):
-        target = self.cfg.pop('target')
-        source = self.cfg.pop('source')
-
         for task_name, section in self.cfg.items():
             if self.is_stopped:
                 return
 
             task = TASKS[task_name]
             for name, desc in section.items():
-                desc['target'] = desc['target'] or target
+                desc['target'] = desc['target'] or self.target
                 if 'source' in desc:
-                    desc['source'] = desc['source'] or source
+                    desc['source'] = desc['source'] or self.source
 
                 task(execute=self.execute, name=name, **desc).start()
         if not self.is_stopped:
@@ -47,7 +46,7 @@ class Main:
         self.thread = None
 
     def new_thread(self):
-        return MainThread(dict(self.cfg))
+        return MainThread(**self.cfg)
 
     def stop(self):
         self.thread and self.thread.stop()
