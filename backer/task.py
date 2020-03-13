@@ -25,17 +25,19 @@ class Task:
 
 @dataclass
 class ScheduledCommandTask(Task):
-    COMMAND = '(none)'
-    DEFAULT_EVERY = ''
-
     target: Path = None
     every: str = ''
     flags: str = ''
 
+    COMMAND = '(none)'
+    DEFAULT_EVERY = ''
+    DEFAULT_FLAGS = ''
+
     def __post_init__(self):
-        self.target = Path(self.target)
-        self.task_dir = self.target / self.name
+        self.target = self.target and Path(self.target)
+        self.task_dir = self.target and (self.target / self.name)
         self.every = self.every or self.DEFAULT_EVERY
+        self.flags = self.flags or self.DEFAULT_FLAGS
 
     def build_command_line(self):
         self.add(*self.split(self.flags))
@@ -67,10 +69,6 @@ class ScheduledCommandTask(Task):
 
 @dataclass
 class DatabaseTask(ScheduledCommandTask):
-    SUFFIX = '.sql'
-    TEMP_SUFFIX = '.tmp'
-    DEFAULT_EVERY = 'day'
-
     user: str = None
     password: str = None
     port: str = None
@@ -78,6 +76,10 @@ class DatabaseTask(ScheduledCommandTask):
     databases: str = None
     tables: str = None
     filename: str = None
+
+    SUFFIX = '.sql'
+    TEMP_SUFFIX = '.tmp'
+    DEFAULT_EVERY = 'day'
 
     def __post_init__(self):
         super().__post_init__()
@@ -96,8 +98,13 @@ class DatabaseTask(ScheduledCommandTask):
         if not self.filename:
             self.filename = self.__class__.__name__.lower() + self.SUFFIX
 
-        self.out_filename = self.task_dir / (self.filename + self.TEMP_SUFFIX)
-        self.filename = self.task_dir / self.filename
+        if self.task_dir:
+            self.out_filename = self.task_dir / (
+                self.filename + self.TEMP_SUFFIX
+            )
+            self.filename = self.task_dir / self.filename
+        else:
+            self.out_file = None
 
     def build_command_line(self):
         self.add(**self.db_flags)

@@ -13,7 +13,7 @@ class TestConfig(TestCase):
         expected = {
             'git': {
                 '0': {
-                    'source': None,
+                    'source': '.',
                     'target': None,
                     'remotes': None,
                     'add_unknown_files': True,

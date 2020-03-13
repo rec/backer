@@ -1,5 +1,5 @@
 from . import git, mongodb, mysql, postgresql, rsync
-import inspect
+from pathlib import Path
 
 OMIT_FROM_CONFIG = 'execute', 'name'
 
@@ -11,11 +11,11 @@ def _make():
         cls = getattr(module, name.capitalize())
         tasks[name] = cls
 
-        sig = inspect.signature(cls)
-        p = sig.parameters
-        p = {k: v.default for k, v in p.items() if k not in OMIT_FROM_CONFIG}
-        p = {k: v for k, v in p.items() if v is not sig.empty}
-        defaults[name] = p
+        t = cls()
+        keys = (k for k in t.__dataclass_fields__ if k not in OMIT_FROM_CONFIG)
+        d = {k: getattr(t, k) for k in keys}
+        d = {k: str(v) if isinstance(v, Path) else v for k, v in d.items()}
+        defaults[name] = d
 
     return tasks, defaults
 
