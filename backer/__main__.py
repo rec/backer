@@ -24,7 +24,7 @@ class MainThread(stoppable_thread.StoppableThread):
                 if 'source' in desc:
                     desc['source'] = desc['source'] or source
 
-                task(self.execute, name, **desc).start()
+                task(execute=self.execute, name=name, **desc).start()
         if not self.is_stopped:
             self.execute.start()
 

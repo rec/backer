@@ -1,6 +1,8 @@
 from . import git, mongodb, mysql, postgresql, rsync
 import inspect
 
+OMIT_FROM_CONFIG = 'execute', 'name'
+
 
 def _make():
     tasks, defaults = {}, {}
@@ -10,9 +12,10 @@ def _make():
         tasks[name] = cls
 
         sig = inspect.signature(cls)
-        params = sig.parameters
-        d = {k: v.default for k, v in params.items()}
-        defaults[name] = {k: v for k, v in d.items() if v is not sig.empty}
+        p = sig.parameters
+        p = {k: v.default for k, v in p.items() if k not in OMIT_FROM_CONFIG}
+        p = {k: v for k, v in p.items() if v is not sig.empty}
+        defaults[name] = p
 
     return tasks, defaults
 

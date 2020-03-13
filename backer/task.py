@@ -10,6 +10,7 @@ class Task:
         If True, immediately create a backup if there is none,
         otherwise wait until the scheduled time for the first backup
     """
+
     execute: object = None
     name: str = ''
     create_at_startup: bool = True
@@ -64,44 +65,39 @@ class ScheduledCommandTask(Task):
                 self.add(flag)
 
 
+@dataclass
 class DatabaseTask(ScheduledCommandTask):
     SUFFIX = '.sql'
     TEMP_SUFFIX = '.tmp'
+    DEFAULT_EVERY = 'day'
 
-    def __init__(
-        self,
-        execute,
-        name,
-        target=None,
-        create_at_startup=True,
-        every='day',
-        flags='',
-        user=None,
-        password=None,
-        port=None,
-        host=None,
-        databases=None,
-        tables=None,
-        filename=None,
-    ):
-        super().__init__(
-            execute, name, create_at_startup, target, every, flags
-        )
+    user: str = None
+    password: str = None
+    port: str = None
+    host: str = None
+    databases: str = None
+    tables: str = None
+    filename: str = None
+
+    def __post_init__(self):
+        super().__post_init__()
         self.db_flags = {
-            'user': user,
-            'password': password,
-            'port': port,
-            'host': host,
+            'user': self.user,
+            'password': self.password,
+            'port': self.port,
+            'host': self.host,
         }
-        self.databases = self.split(databases)
-        self.tables = self.split(tables)
+        self.databases = self.split(self.databases)
+        self.tables = self.split(self.tables)
 
         if self.tables and len(self.databases) != 1:
             raise ValueError('Exactly one database if there are tables')
 
-        filename = filename or (self.__class__.__name__.lower() + self.SUFFIX)
-        self.filename = self.task_dir / filename
-        self.out_filename = self.task_dir / (filename + self.TEMP_SUFFIX)
+        if not self.filename:
+            self.filename = self.__class__.__name__.lower() + self.SUFFIX
+
+        self.out_filename = self.task_dir / (self.filename + self.TEMP_SUFFIX)
+        self.filename = self.task_dir / self.filename
 
     def build_command_line(self):
         self.add(**self.db_flags)
