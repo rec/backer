@@ -1,12 +1,13 @@
+from dataclasses import dataclass
 from pathlib import Path
 import shlex
 
 
+@dataclass
 class Task:
-    def __init__(self, execute, name, create_at_startup):
-        self.execute = execute
-        self.name = name
-        self.create_at_startup = create_at_startup
+    execute: object
+    name: str
+    create_at_startup: bool
 
     def start(self):
         raise NotImplementedError
