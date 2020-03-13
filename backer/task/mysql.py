@@ -1,4 +1,4 @@
-from .task import DatabaseTask
+from ._database import DatabaseTask
 
 # See https://dev.mysql.com/doc/refman/8.0/en/mysqldump.html
 

@@ -1,4 +1,4 @@
-from .task import DatabaseTask
+from ._database import DatabaseTask
 
 # See https://www.postgresql.org/docs/current/app-pgdump.html and
 # https://www.postgresql.org/docs/current/app-pg-dumpall.html

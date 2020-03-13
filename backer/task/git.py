@@ -1,4 +1,4 @@
-from .task import Task
+from ._task import Task
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue, Empty
