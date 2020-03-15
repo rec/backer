@@ -25,7 +25,7 @@ class Git(Task):
     target: str = None
     source: str = None
     git_init: bool = True
-    remotes: str = None
+    remotes: dict = None
     add_unknown_files: bool = True
     file_event_window: float = 0.05
     commit_message: str = '%Y-%m-%dT%H:%M%SZ'

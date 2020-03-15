@@ -8,6 +8,7 @@ configure the program, otherwise stdin is read.
 
 from . import variables
 from . import task as _task
+from .task import _describe
 from pathlib import Path
 import argparse
 import os
@@ -27,10 +28,13 @@ def config(args=None, environ=os.environ):
     p.add_argument('--dry-run', '-d', action='store_true', help=_DRY_RUN_HELP)
     p.add_argument('--env', '-e', nargs='*', help=_ENV_HELP)
     p.add_argument('--env-file', default=None, help=_ENV_FILE_HELP)
+    p.add_argument(
+        '--full-help', '-H', action='store_true', help=_FULL_HELP_HELP
+    )
 
     arguments = vars(p.parse_args(args))
     env_file = arguments.pop('env_file')
-    config = arguments.pop('config') or [_get_default_config()]
+    config = arguments.pop('config') or _get_default_config()
     env = arguments.pop('env') or ()
 
     variables.read_env(env_file)
@@ -55,7 +59,7 @@ def _combine(sections):
         for section_name, tasks in section.items():
             tasks = tasks or {'0': None}
             task_class = _task.task_class(section_name)
-            default = task_class.defaults()
+            default = _describe.defaults(task_class)
 
             section_config = config.setdefault(section_name, {})
             for task_name, task in (tasks or {}).items():
@@ -91,9 +95,8 @@ def _get_default_config():
     for s in SUFFIXES:
         path = STEM.with_suffix(s)
         if path.exists():
-            return path
-
-    raise ValueError('No configuration file found')
+            return [path]
+    return []
 
 
 _DESCRIPTION = 'Periodically back up a directory or database'
@@ -122,3 +125,5 @@ _SOURCE_HELP = """
 The source directory to back up from.  Default is the current directory."""
 
 _TARGET_HELP = 'The target directory to back up to.'
+
+_FULL_HELP_HELP = 'Print full help on all backer Task types'
