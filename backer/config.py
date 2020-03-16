@@ -28,9 +28,6 @@ def config(args=None, environ=os.environ):
     p.add_argument('--dry-run', '-d', action='store_true', help=_DRY_RUN_HELP)
     p.add_argument('--env', '-e', nargs='*', help=_ENV_HELP)
     p.add_argument('--env-file', default=None, help=_ENV_FILE_HELP)
-    p.add_argument(
-        '--full-help', '-H', action='store_true', help=_FULL_HELP_HELP
-    )
 
     arguments = vars(p.parse_args(args))
     env_file = arguments.pop('env_file')
@@ -125,5 +122,3 @@ _SOURCE_HELP = """
 The source directory to back up from.  Default is the current directory."""
 
 _TARGET_HELP = 'The target directory to back up to.'
-
-_FULL_HELP_HELP = 'Print full help on all backer Task types'

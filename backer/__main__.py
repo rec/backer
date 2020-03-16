@@ -1,6 +1,5 @@
 from . import config, signal_handler, stoppable_thread
 from .task import task_class
-from . import describe
 from .execute import Execute
 import time
 import yaml
@@ -44,7 +43,6 @@ class Main:
     def __init__(self, args=None):
         self.cfg = config.config(args)
         self.dry_run = self.cfg.pop('dry_run')
-        self.full_help = self.cfg.pop('full_help')
         self.thread = None
 
     def new_thread(self):
@@ -75,8 +73,6 @@ def backer():
     main = Main()
     if main.dry_run:
         print(yaml.safe_dump(main.cfg))
-    elif main.full_help:
-        describe.describe_all()
     else:
         signal_handler.run(main.backer, main.stop)
 

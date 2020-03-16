@@ -60,7 +60,6 @@ EXPECTED = {
     'target': 'foo',
     'source': None,
     'dry_run': False,
-    'full_help': False,
     'rsync': {
         'hourly': {
             'create_at_startup': True,
