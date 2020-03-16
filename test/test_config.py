@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 from backer import task
-from backer.task._describe import defaults
+from backer import describe
 
 SECTIONS = ('git', 'mongodb', 'mysql', 'postgresql', 'rsync')
 TASKS = {s: task.task_class(s) for s in SECTIONS}
@@ -31,12 +31,12 @@ class TestConfig(TestCase):
 
     def test_all(self):
         actual = config._combine([LINE])
-        expected = {k: {'0': defaults(v)} for k, v in TASKS.items()}
+        expected = {k: {'0': describe.defaults(v)} for k, v in TASKS.items()}
         assert expected == actual
 
     def test_parts(self):
         actual = config._combine([LINE])
-        expected = {k: {'0': defaults(v)} for k, v in TASKS.items()}
+        expected = {k: {'0': describe.defaults(v)} for k, v in TASKS.items()}
         assert expected == actual
 
     def test_config(self):

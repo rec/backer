@@ -8,7 +8,7 @@ configure the program, otherwise stdin is read.
 
 from . import variables
 from . import task as _task
-from .task import _describe
+from . import describe
 from pathlib import Path
 import argparse
 import os
@@ -59,7 +59,7 @@ def _combine(sections):
         for section_name, tasks in section.items():
             tasks = tasks or {'0': None}
             task_class = _task.task_class(section_name)
-            default = _describe.defaults(task_class)
+            default = describe.defaults(task_class)
 
             section_config = config.setdefault(section_name, {})
             for task_name, task in (tasks or {}).items():

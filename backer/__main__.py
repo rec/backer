@@ -1,5 +1,6 @@
 from . import config, signal_handler, stoppable_thread
-from .task import task_class, _describe
+from .task import task_class
+from . import describe
 from .execute import Execute
 import time
 import yaml
@@ -75,7 +76,7 @@ def backer():
     if main.dry_run:
         print(yaml.safe_dump(main.cfg))
     elif main.full_help:
-        _describe.describe_all()
+        describe.describe_all()
     else:
         signal_handler.run(main.backer, main.stop)
 

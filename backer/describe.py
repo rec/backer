@@ -1,4 +1,4 @@
-from . import task_class
+from .task import task_class
 from pathlib import Path
 import yaml
 
@@ -59,7 +59,7 @@ def _reduce(desc):
 
 
 def _descriptions():
-    files = Path(__file__).parent.iterdir()
+    files = (Path(__file__).parent / 'task').iterdir()
     stems = (f.stem for f in files if f.suffix == '.py')
     names = sorted(s for s in stems if not s.startswith('_'))
     return {n: _describe(task_class(n)) for n in names}
