@@ -3,7 +3,25 @@ from pathlib import Path
 import yaml
 
 
-def describe(cls, desc=None):
+def describe_all(print=print):
+    for i, (task, desc) in enumerate(_descriptions().items()):
+        i and print()
+        print(task + ':')
+        for j, (name, field) in enumerate(desc.items()):
+            j and print()
+            print('  {name}: {type} = {default!r}'.format(**field))
+            doc = field['doc']
+            if doc:
+                for line in _split(doc, 76):
+                    print('   ', line)
+
+
+def defaults(cls):
+    desc = _describe(cls)
+    return {k: v['default'] for k, v in desc.items()}
+
+
+def _describe(cls, desc=None):
     desc = desc or {}
 
     try:
@@ -19,7 +37,7 @@ def describe(cls, desc=None):
         docs = yaml.safe_load(docs)
 
     for base in cls.__bases__:
-        describe(base, desc)
+        _describe(base, desc)
 
     for name, field in fields.items():
         desc[name] = {
@@ -40,29 +58,11 @@ def _reduce(desc):
     return result
 
 
-def defaults(cls):
-    desc = describe(cls)
-    return {k: v['default'] for k, v in desc.items()}
-
-
-def descriptions():
+def _descriptions():
     files = Path(__file__).parent.iterdir()
     stems = (f.stem for f in files if f.suffix == '.py')
     names = sorted(s for s in stems if not s.startswith('_'))
-    return {n: describe(task_class(n)) for n in names}
-
-
-def describe_all(print=print):
-    for i, (task, desc) in enumerate(descriptions().items()):
-        i and print()
-        print(task + ':')
-        for j, (name, field) in enumerate(desc.items()):
-            j and print()
-            print('  {name}: {type} = {default!r}'.format(**field))
-            doc = field['doc']
-            if doc:
-                for line in _split(doc, 76):
-                    print('   ', line)
+    return {n: _describe(task_class(n)) for n in names}
 
 
 def _split(line, width):
