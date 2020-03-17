@@ -1,26 +1,71 @@
 from backer import describe
-from pathlib import Path
 from backer.task import task_class
+from pathlib import Path
+import contextlib
+import functools
+
+ROOT = Path(__file__).parent.parent
+DIVIDER = 'backer task reference'
 
 
-def describe_all(print=print):
-    for i, (task, desc) in enumerate(_descriptions().items()):
-        i and print()
-        print(task + ':')
-        for j, (name, field) in enumerate(desc.items()):
-            j and print()
-            print('  {name}: {type} = {default!r}'.format(**field))
-            doc = field['doc']
-            if doc:
-                for line in _split(doc, 76):
-                    print('   ', line)
-
-
-def _descriptions():
-    files = Path(__file__).parent.parent / 'backer' / 'task'
+def write_docs(print=print):
+    assert print is not __builtins__['print']
+    files = ROOT / 'backer' / 'task'
     stems = (f.stem for f in files.iterdir() if f.suffix == '.py')
-    names = sorted(s for s in stems if not s.startswith('_'))
-    return {n: describe.describe(task_class(n)) for n in names}
+    files = sorted(s for s in stems if not s.startswith('_'))
+
+    readme = ROOT / 'README.rst'
+
+    lines = []
+    for line in readme.open():
+        lines.append(line)
+        if line.lower().startswith(DIVIDER):
+            break
+
+    with _open(readme, print) as pr:
+        __builtins__['print']('HERE!')
+        pr('here')
+        pr(*lines, sep='\n')
+        pr('-' * len(lines[-1]) + '\n')
+
+        for name in files:
+            pr(_describe_one(name))
+
+
+def _describe_one(name, print=print):
+    cls = task_class(name)
+    desc = describe.describe(cls)
+    intro, body = _get_doc(cls)
+    filename = (ROOT / 'doc' / name).with_suffix('.rst')
+    with _open(filename, print) as pr:
+        title = '%s: %s' % (name, intro)
+        pr(title)
+        pr('-' * len(title))
+        pr()
+
+        for j, (name, field) in enumerate(desc.items()):
+            j and pr()
+            pr('``{name}: {type} = {default!r}``'.format(**field))
+            for line in _split(field['doc'], 76):
+                pr('   ', line)
+
+    return f'``{name}``:\n  {intro}\n'
+
+
+def _get_doc(cls):
+    doc = getattr(cls, '__doc__', None) or ''
+    lines = [i.strip() for i in doc.splitlines()]
+    intro = []
+    while lines and not lines[0]:
+        lines.pop(0)
+
+    while lines and lines[0]:
+        intro.append(lines.pop(0))
+
+    while lines and not lines[0]:
+        lines.pop(0)
+
+    return ' '.join(intro), ' '.join(lines)
 
 
 def _split(line, width):
@@ -37,5 +82,18 @@ def _split(line, width):
         yield ' '.join(parts)
 
 
+@contextlib.contextmanager
+def _open(filename, print=print):
+    with open(filename, 'w') as fp:
+        def pr(*args, **kwds):
+            __builtins__['print']('XXX', args, kwds)
+            print(*args, **kwds, file=fp)
+
+        if True:
+            yield pr
+        else:
+            yield functools.partial(print, file=fp)
+
+
 if __name__ == '__main__':
-    describe_all()
+    write_docs()
