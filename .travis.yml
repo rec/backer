@@ -12,6 +12,7 @@ branches:
 install:
 - pip install -r requirements.txt
 - pip install -r test_requirements.txt
+- pip install -r backer_doc/requirements.txt
 
 script:
 - flake8

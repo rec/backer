@@ -1,5 +1,5 @@
-import backer
 from setuptools import setup
+import backer
 
 with open('requirements.txt') as f:
     _install_requires = f.read().splitlines()
