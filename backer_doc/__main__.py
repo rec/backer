@@ -1,20 +1,17 @@
 from backer import describe
 from backer.task import task_class
 from pathlib import Path
-import contextlib
-import functools
+import safer
 
 ROOT = Path(__file__).parent.parent
 DIVIDER = 'backer task reference'
+README = ROOT / 'README.rst'
 
 
-def write_docs(print=print):
-    assert print is not __builtins__['print']
+def write_docs(readme=README):
     files = ROOT / 'backer' / 'task'
     stems = (f.stem for f in files.iterdir() if f.suffix == '.py')
     files = sorted(s for s in stems if not s.startswith('_'))
-
-    readme = ROOT / 'README.rst'
 
     lines = []
     for line in readme.open():
@@ -22,14 +19,12 @@ def write_docs(print=print):
         if line.lower().startswith(DIVIDER):
             break
 
-    with _open(readme, print) as pr:
-        __builtins__['print']('HERE!')
-        pr('here')
-        pr(*lines, sep='\n')
-        pr('-' * len(lines[-1]) + '\n')
+    with safer.printer(readme) as print:
+        print(*lines, sep='\n')
+        print('-' * len(lines[-1]) + '\n')
 
         for name in files:
-            pr(_describe_one(name))
+            print(_describe_one(name))
 
 
 def _describe_one(name, print=print):
@@ -37,17 +32,17 @@ def _describe_one(name, print=print):
     desc = describe.describe(cls)
     intro, body = _get_doc(cls)
     filename = (ROOT / 'doc' / name).with_suffix('.rst')
-    with _open(filename, print) as pr:
+    with safer.printer(filename) as print:
         title = '%s: %s' % (name, intro)
-        pr(title)
-        pr('-' * len(title))
-        pr()
+        print(title)
+        print('-' * len(title))
+        print()
 
         for j, (name, field) in enumerate(desc.items()):
-            j and pr()
-            pr('``{name}: {type} = {default!r}``'.format(**field))
+            j and print()
+            print('``{name}: {type} = {default!r}``'.format(**field))
             for line in _split(field['doc'], 76):
-                pr('   ', line)
+                print('   ', line)
 
     return f'``{name}``:\n  {intro}\n'
 
@@ -80,19 +75,6 @@ def _split(line, width):
 
     if parts:
         yield ' '.join(parts)
-
-
-@contextlib.contextmanager
-def _open(filename, print=print):
-    with open(filename, 'w') as fp:
-        def pr(*args, **kwds):
-            __builtins__['print']('XXX', args, kwds)
-            print(*args, **kwds, file=fp)
-
-        if True:
-            yield pr
-        else:
-            yield functools.partial(print, file=fp)
 
 
 if __name__ == '__main__':
