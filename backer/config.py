@@ -44,8 +44,10 @@ def config(args=None, environ=os.environ):
             key, value = key_value, True
         environ[key.strip()] = value
 
-    config = dict(_combine(config), **arguments)
-    return variables.replace(config, environ)
+    cfg = _combine(config)
+    if cfg:
+        config = dict(cfg, **arguments)
+        return variables.replace(config, environ)
 
 
 def _combine(sections):

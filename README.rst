@@ -1,8 +1,9 @@
-backer
-------
+``backer``: 📦 continuous backups in Python 📦
+-------------------------------------------------------
 
-📦 continuous backups in Python 📦
+Install ``backer`` from the command line using
+`pip <https://pypi.org/project/pip/>`_:
 
+.. code-block:: bash
 
-Backer Task Reference
-----------------------
+    pip3 install backer
