@@ -42,8 +42,17 @@ class MainThread(stoppable_thread.StoppableThread):
 class Main:
     def __init__(self, args=None):
         self.cfg = config.config(args)
-        self.dry_run = self.cfg.pop('dry_run')
-        self.thread = None
+        if self.cfg:
+            self.dry_run = self.cfg.pop('dry_run')
+            self.thread = None
+
+    def run(self):
+        if not self.cfg:
+            print('Nothing to backup')
+        elif self.dry_run:
+            print(yaml.safe_dump(self.cfg))
+        else:
+            signal_handler.run(self.backer, self.stop)
 
     def new_thread(self):
         return MainThread(**self.cfg)
@@ -69,13 +78,5 @@ class Main:
         print('Tasks finished')
 
 
-def backer():
-    main = Main()
-    if main.dry_run:
-        print(yaml.safe_dump(main.cfg))
-    else:
-        signal_handler.run(main.backer, main.stop)
-
-
 if __name__ == '__main__':
-    backer()
+    Main().run()
