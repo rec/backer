@@ -1,6 +1,6 @@
 coverage
 flake8
-import_all
+impall
 gitz
 pytest
 pytest-benchmark

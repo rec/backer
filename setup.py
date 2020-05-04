@@ -1,5 +1,4 @@
 import backer
-from setuptools import setup
 
 with open('requirements.txt') as f:
     _install_requires = f.read().splitlines()
@@ -15,6 +14,8 @@ _classifiers = [
 ]
 
 if __name__ == '__main__':
+    from setuptools import setup
+
     setup(
         name='backer',
         version=backer.__version__,
