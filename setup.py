@@ -1,4 +1,3 @@
-from setuptools import setup
 import backer
 
 with open('requirements.txt') as f:
@@ -15,6 +14,8 @@ _classifiers = [
 ]
 
 if __name__ == '__main__':
+    from setuptools import setup
+
     setup(
         name='backer',
         version=backer.__version__,
