@@ -37,9 +37,8 @@ DOCKER_RE = re.compile(
 def read_env(env_file=None):
     """Read environment variables from a .env file"""
     if env_file != '':
-        if isinstance(env_file, str):
-            if not Path(env_file).exists():
-                raise FileNotFoundError(env_file)
+        if isinstance(env_file, str) and not Path(env_file).exists():
+            raise FileNotFoundError(env_file)
 
         dotenv.load_dotenv(env_file)
 
