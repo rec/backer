@@ -8,6 +8,10 @@ branches:
   - master
   - /^_gitz_stripe_.*$/
 
+matrix:
+  include:
+    - python: 3.9-dev
+      dist: xenial
 
 install:
 - pip install -r requirements.txt
