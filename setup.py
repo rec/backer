@@ -25,7 +25,7 @@ if __name__ == '__main__':
         url='https://github.com/rec/backer',
         tests_require=['pytest'],
         py_modules=['backer'],
-        description='Continuously back up files',
+        description='📦 Continuously back up files 📦',
         long_description=open('README.rst').read(),
         license='MIT',
         classifiers=_classifiers,
