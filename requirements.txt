@@ -1,6 +1,0 @@
-python-dotenv
-pyyaml
-run-subprocess
-safe-writer
-schedule
-watchdog

@@ -13,6 +13,20 @@ readme = "README.rst"
 
 [tool.poetry.dependencies]
 python = "^3.7"
+python-dotenv = "^0.21.1"
+pyyaml = "^6.0"
+run-subprocess = "^0.9.1"
+safe-writer = "^0.9.3"
+schedule = "^1.1.0"
+watchdog = "^2.2.1"
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.1.0"
+flake8 = "5.0.4"
+impall = "^1.1.1"
+gitz = "^1.4.1"
+pytest = "^7.2.1"
+pytest-benchmark = "^4.0.0"
 
 [build-system]
 requires = ["poetry-core"]
