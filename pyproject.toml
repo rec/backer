@@ -5,7 +5,7 @@ target-version = ['py37']
 
 [tool.poetry]
 name = "backer"
-version = "0.7.1"
+version = "0.7.2"
 description = "📦 Continuously back up files 📦"
 authors = ["Tom Ritchford <tom@swirly.com>"]
 license = "MIT"
