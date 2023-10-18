@@ -28,6 +28,15 @@ gitz = "^1.4.1"
 pytest = "^7.2.1"
 pytest-benchmark = "^4.0.0"
 
+
+[tool.coverage]
+[tool.coverage.run]
+branch = "True"
+source = "backer/"
+
+[tool.coverage.report]
+fail_under = "50"
+skip_covered = "True"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
