@@ -1,30 +1,49 @@
-[tool.poetry]
+[project]
 name = "backer"
 version = "0.7.2"
 description = "📦 Continuously back up files 📦"
-authors = ["Tom Ritchford <tom@swirly.com>"]
-license = "MIT"
+authors = [{ name = "Tom Ritchford", email = "tom@swirly.com" }]
+requires-python = ">=3.7,<4"
 readme = "README.md"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+    "python-dotenv>=0.21.1,<0.22",
+    "pyyaml>=6.0,<7",
+    "run-subprocess>=0.9.1,<0.10",
+    "safe-writer>=0.9.3,<0.10",
+    "schedule>=1.1.0,<2",
+    "watchdog>=2.2.1,<3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.7"
-python-dotenv = "^0.21.1"
-pyyaml = "^6.0"
-run-subprocess = "^0.9.1"
-safe-writer = "^0.9.3"
-schedule = "^1.1.0"
-watchdog = "^2.2.1"
+[dependency-groups]
+dev = [
+    "coverage>=7.1.0,<8",
+    "flake8==5.0.4",
+    "impall>=1.1.1,<2",
+    "gitz>=1.4.1,<2",
+    "pytest>=7.2.1,<8",
+    "pytest-benchmark>=4.0.0,<5",
+]
 
-[tool.poetry.group.dev.dependencies]
-coverage = "^7.1.0"
-flake8 = "5.0.4"
-impall = "^1.1.1"
-gitz = "^1.4.1"
-pytest = "^7.2.1"
-pytest-benchmark = "^4.0.0"
+[tool.uv]
 
+[tool.uv.build-backend]
+module-root = ""
 
-[tool.coverage]
+[build-system]
+requires = ["uv_build>=0.9.0,<0.10.0"]
+build-backend = "uv_build"
 [tool.coverage.run]
 branch = "True"
 source = "backer/"
@@ -35,6 +54,3 @@ skip_covered = "True"
 
 [tool.mypy]
 strict = true
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
