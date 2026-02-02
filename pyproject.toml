@@ -34,6 +34,9 @@ dev = [
     "gitz>=1.4.1,<2",
     "pytest>=7.2.1,<8",
     "pytest-benchmark>=4.0.0,<5",
+    "pyupgrade>=3.21.2",
+    "ruff>=0.14.14",
+    "ty>=0.0.14",
 ]
 
 [tool.uv]
@@ -45,12 +48,13 @@ module-root = ""
 requires = ["uv_build>=0.9.0,<0.10.0"]
 build-backend = "uv_build"
 [tool.coverage.run]
-branch = "True"
+branch = true
 source = "backer/"
 
 [tool.coverage.report]
 fail_under = "50"
-skip_covered = "True"
+skip_covered = true
+exclude_lines = ["pragma: no cover", "if False:", "if __name__ == .__main__.:", "raise NotImplementedError"]
 
 [tool.mypy]
 strict = true
