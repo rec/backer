@@ -47,10 +47,10 @@ class MainTester(unittest.TestCase):
     def _test(self, config, expected, *args):
         cfg = yaml.safe_dump(config)
         with TemporaryDirectory() as td:
-            with self.main(td, '-c', cfg) as ex:
+            with self.main(td, "-c", cfg) as ex:
                 ((cmd, *_),) = ex.runs
-                expected = ' '.join((expected.format(tmpdir=td), *args))
-                actual = ' '.join(cmd)
+                expected = " ".join((expected.format(tmpdir=td), *args))
+                actual = " ".join(cmd)
                 return actual, expected
 
 
@@ -59,6 +59,6 @@ def wait():
     time.sleep(0.1)
 
 
-_EXECUTE = 'backer.__main__.Execute'
+_EXECUTE = "backer.__main__.Execute"
 execute_keep_run = mock.patch(_EXECUTE, FakeExecuteKeepRun)
 execute = mock.patch(_EXECUTE, FakeExecute)

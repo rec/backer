@@ -16,6 +16,7 @@ Docker format:
     ${VAR:?err} - throws an exception containing err if VAR is unset or empty
     ${VAR?err} - throws an exception containing err if VAR is unset
 """
+
 from pathlib import Path
 import dotenv
 import os
@@ -36,7 +37,7 @@ DOCKER_RE = re.compile(
 
 def read_env(env_file=None):
     """Read environment variables from a .env file"""
-    if env_file != '':
+    if env_file != "":
         if isinstance(env_file, str) and not Path(env_file).exists():
             raise FileNotFoundError(env_file)
 
@@ -45,8 +46,8 @@ def read_env(env_file=None):
 
 def replace(s, env=None):
     if isinstance(s, str):
-        if '$' in s or '{' in s:
-            return ''.join(_apply(s, env))
+        if "$" in s or "{" in s:
+            return "".join(_apply(s, env))
         return s
 
     if isinstance(s, dict):
@@ -69,18 +70,18 @@ def _apply(s, env):
     for before, name1, name2, colon, sep, arg in zip(*[iter(split)] * 6):
         yield before.format(**env or {})
 
-        if name1 == '' or name2 == '':
-            raise KeyError('Empty variable name')
+        if name1 == "" or name2 == "":
+            raise KeyError("Empty variable name")
 
         value = env.get(name1 or name2)
-        if sep == '?':
+        if sep == "?":
             if value is None or (colon and not value):
                 raise KeyError(arg or 'Variable "%s" does not exist' % name2)
 
-        elif sep == '-':
+        elif sep == "-":
             if value is None or (colon and not value):
                 value = arg
 
-        yield value or ''
+        yield value or ""
 
     yield split[-1].format(**env)

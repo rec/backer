@@ -5,10 +5,10 @@ from pathlib import Path
 @dataclass
 class ScheduledCommandTask(Task):
     target: str = None
-    every: str = ''
-    flags: str = ''
+    every: str = ""
+    flags: str = ""
 
-    COMMAND = '(none)'
+    COMMAND = "(none)"
 
     def __post_init__(self):
         self.target = Path(self.target)
@@ -35,10 +35,10 @@ class ScheduledCommandTask(Task):
 
         for flag, value in kwds.items():
             if value is not None:
-                flag = flag.replace('_', '-')
-                flag = ('-' if len(flag) == 1 else '--') + flag
+                flag = flag.replace("_", "-")
+                flag = ("-" if len(flag) == 1 else "--") + flag
                 if value is not True:
-                    flag = '%s=%s' % (flag, value)
+                    flag = "%s=%s" % (flag, value)
                 self.add(flag)
 
     __dataclass_docs__ = """

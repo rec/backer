@@ -20,9 +20,9 @@ class MainThread(stoppable_thread.StoppableThread):
 
             task = task_class(task_name)
             for name, desc in section.items():
-                desc['target'] = desc['target'] or self.target
-                if 'source' in desc:
-                    desc['source'] = desc['source'] or self.source
+                desc["target"] = desc["target"] or self.target
+                if "source" in desc:
+                    desc["source"] = desc["source"] or self.source
 
                 task(execute=self.execute, name=name, **desc).start()
         if not self.is_stopped:
@@ -43,12 +43,12 @@ class Main:
     def __init__(self, args=None):
         self.cfg = config.config(args)
         if self.cfg:
-            self.dry_run = self.cfg.pop('dry_run')
+            self.dry_run = self.cfg.pop("dry_run")
             self.thread = None
 
     def run(self):
         if not self.cfg:
-            print('Nothing to backup')
+            print("Nothing to backup")
         elif self.dry_run:
             print(yaml.safe_dump(self.cfg))
         else:
@@ -67,16 +67,16 @@ class Main:
                     time.sleep(1)
 
             except KeyboardInterrupt:
-                print('KeyboardInterrupt detected')
+                print("KeyboardInterrupt detected")
 
             except Exception as e:
-                print('Unexpected exception detected', e)
+                print("Unexpected exception detected", e)
                 raise e
 
-            print('Finishing off tasks - please wait')
+            print("Finishing off tasks - please wait")
         self.thread = None
-        print('Tasks finished')
+        print("Tasks finished")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     Main().run()

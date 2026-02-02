@@ -6,13 +6,11 @@ from gitz.git import GIT, repo
 class TestMain(patch.MainTester):
     @repo.test
     def test_git(self):
-        with self.main('-c', 'git:') as execute:
-            repo.write_files('a', 'b', 'c')
+        with self.main("-c", "git:") as execute:
+            repo.write_files("a", "b", "c")
 
-            observer, = execute.observed
+            (observer,) = execute.observed
             observer(None)
             patch.wait()
-            files = GIT.diff_tree(
-                '--no-commit-id', '--name-only', '-r', 'HEAD'
-            )
-            assert set(files) == set('abc')
+            files = GIT.diff_tree("--no-commit-id", "--name-only", "-r", "HEAD")
+            assert set(files) == set("abc")

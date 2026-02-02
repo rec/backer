@@ -3,7 +3,7 @@ from ._scheduled import dataclass, ScheduledCommandTask
 
 @dataclass
 class DatabaseTask(ScheduledCommandTask):
-    every: str = 'day'  # override
+    every: str = "day"  # override
     host: str = None
     port: str = None
     user: str = None
@@ -12,22 +12,22 @@ class DatabaseTask(ScheduledCommandTask):
     tables: str = None
     filename: str = None
 
-    SUFFIX = '.sql'
-    TEMP_SUFFIX = '.tmp'
+    SUFFIX = ".sql"
+    TEMP_SUFFIX = ".tmp"
 
     def __post_init__(self):
         super().__post_init__()
         self.db_flags = {
-            'user': self.user,
-            'password': self.password,
-            'port': self.port,
-            'host': self.host,
+            "user": self.user,
+            "password": self.password,
+            "port": self.port,
+            "host": self.host,
         }
         self.databases = self.split(self.databases)
         self.tables = self.split(self.tables)
 
         if self.tables and len(self.databases) != 1:
-            raise ValueError('Exactly one database if there are tables')
+            raise ValueError("Exactly one database if there are tables")
 
         if not self.filename:
             self.filename = self.__class__.__name__.lower() + self.SUFFIX

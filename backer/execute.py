@@ -12,7 +12,7 @@ class Execute(StoppableThreadList):
         self.sleep = sleep
 
     def run(self, *cmd, out=None, err=None, **kwds):
-        print('$', *cmd)
+        print("$", *cmd)
         result = []
 
         def output(line):
@@ -21,7 +21,7 @@ class Execute(StoppableThreadList):
 
         ec = rs.run(cmd, out or output, err or print, **kwds)
         if ec:
-            raise ValueError('Command failed with error ', ec)
+            raise ValueError("Command failed with error ", ec)
 
         return result
 
@@ -44,16 +44,16 @@ class Execute(StoppableThreadList):
         """Schedule a function"""
         if not self._scheduler:
             self._scheduler = _schedule.Scheduler()
-            self.new_thread(self._scheduler_loop, name='scheduler_loop')
+            self.new_thread(self._scheduler_loop, name="scheduler_loop")
 
-        every, *at = every.split('@', maxsplit=1)
+        every, *at = every.split("@", maxsplit=1)
         sched = getattr(self._scheduler.every(), every)
 
         if at:
             # Rewrite 4:32 to 04:32
             at = at[0]
-            if len(at.split(':')[0]) < 2:
-                at = '0' + at
+            if len(at.split(":")[0]) < 2:
+                at = "0" + at
             sched = sched.at(at)
 
         sched.do(callback)
@@ -65,7 +65,7 @@ class Execute(StoppableThreadList):
 
 
 class Observer(observers.Observer, Stoppable):
-    def __init__(self, *args, name='observer', **kwds):
+    def __init__(self, *args, name="observer", **kwds):
         observers.Observer.__init__(self, *args, **kwds)
         Stoppable.__init__(self, name)
 

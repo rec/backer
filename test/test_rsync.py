@@ -8,17 +8,17 @@ class TestRsync(patch.MainTester):
     def test_rsync(self):
         with TemporaryDirectory() as source, TemporaryDirectory() as target:
             ps = Path(source)
-            pt = Path(target) / '0' / ps.name
+            pt = Path(target) / "0" / ps.name
 
-            (ps / 'one').write_text('test_one')
+            (ps / "one").write_text("test_one")
 
-            with self.main(target, source, '-c', 'rsync:') as ex:
-                assert (pt / 'one').read_text() == 'test_one'
+            with self.main(target, source, "-c", "rsync:") as ex:
+                assert (pt / "one").read_text() == "test_one"
 
-                (ps / 'two').write_text('test_two')
+                (ps / "two").write_text("test_two")
 
                 (callback,) = ex.scheduled
                 callback()
                 patch.wait()
 
-                assert (pt / 'two').read_text() == 'test_two'
+                assert (pt / "two").read_text() == "test_two"

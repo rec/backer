@@ -5,10 +5,10 @@ import shlex
 @dataclass
 class Task:
     execute: object = None
-    name: str = ''
+    name: str = ""
     create_at_startup: bool = True
 
-    _HIDDEN_FIELDS = {'execute', 'name'}
+    _HIDDEN_FIELDS = {"execute", "name"}
 
     def start(self):
         raise NotImplementedError

@@ -28,24 +28,24 @@ class Git(Task):
     remotes: dict = None
     add_unknown_files: bool = True
     file_event_window: float = 0.05
-    commit_message: str = '%Y-%m-%dT%H:%M%SZ'
+    commit_message: str = "%Y-%m-%dT%H:%M%SZ"
 
     def __post_init__(self):
         self.queue = Queue()
-        self.source = os.path.expandvars(self.source or '.')
+        self.source = os.path.expandvars(self.source or ".")
         self.source = Path(self.source).expanduser()
         self.git = self.execute and functools.partial(
-            self.execute.run, 'git', cwd=str(self.source)
+            self.execute.run, "git", cwd=str(self.source)
         )
 
-        if not (self.git_init or (self.source / '.git').is_dir()):
+        if not (self.git_init or (self.source / ".git").is_dir()):
             raise ValueError(_ERROR_NO_GIT_DIR % self.source)
 
     def start(self):
         if self.create_at_startup:
             self._commit()
 
-        self.execute.new_thread(self._service_queue, 'service_queue')
+        self.execute.new_thread(self._service_queue, "service_queue")
         self.execute.observe(self.queue.put, self.source)
 
     def _service_queue(self):
@@ -66,53 +66,53 @@ class Git(Task):
             requested = {k: None for k in self.remotes or ()}
         remotes = list(requested)
 
-        if not (self.source / '.git').is_dir():
-            self.git('init')
-            self.git('add', '.')
+        if not (self.source / ".git").is_dir():
+            self.git("init")
+            self.git("add", ".")
             for remote, url in requested.items():
                 if url:
-                    self.git('remote', 'add', remote, url)
+                    self.git("remote", "add", remote, url)
                 else:
-                    _warn('Unable to create remote', remote)
+                    _warn("Unable to create remote", remote)
                     remotes.remove(remote)
             return remotes
 
         if self.remotes is None:
-            return self.git('remote')
+            return self.git("remote")
 
-        existing = [i.split()[:2] for i in self.git('remote', '-v')]
+        existing = [i.split()[:2] for i in self.git("remote", "-v")]
         existing = {k: v for k, v in existing}
 
         for remote, url in requested.items():
             existing_url = existing.get(remote)
             if url is None:
                 if existing_url is None:
-                    _warn('No remote named', remote)
+                    _warn("No remote named", remote)
                     remotes.remove(remote)
 
             elif existing_url != url:
-                _warn('Changing remote from', existing_url, 'to', url)
-                self.git('remote', 'set-url', remote, url)
+                _warn("Changing remote from", existing_url, "to", url)
+                self.git("remote", "set-url", remote, url)
 
         return remotes
 
     def _commit(self):
         remotes = self._initialize()
-        lines = self.git('status', '--porcelain')
+        lines = self.git("status", "--porcelain")
         if not self.add_unknown_files:
-            lines = [i for i in lines if not i.startwith('??')]
+            lines = [i for i in lines if not i.startwith("??")]
 
         if lines:
             files = [i.split(maxsplit=1)[1] for i in lines]
-            self.git('add', *files)
+            self.git("add", *files)
 
-            if '%' in self.commit_message:
+            if "%" in self.commit_message:
                 msg = datetime.datetime.now().strftime(self.commit_message)
             else:
                 msg = self.commit_message
-            self.git('commit', '-am', msg)
+            self.git("commit", "-am", msg)
             for remote in remotes:
-                self.git('push', remote)
+                self.git("push", remote)
 
     __dataclass_docs__ = """
 source: >-
@@ -138,7 +138,7 @@ commit_message: >-
 
 
 def _warn(*args, **kwds):
-    print('WARNING:', *args, **kwds, file=sys.stderr)
+    print("WARNING:", *args, **kwds, file=sys.stderr)
 
 
-_ERROR_NO_GIT_DIR = 'Not a git directory and `git_init` is not set: %s'
+_ERROR_NO_GIT_DIR = "Not a git directory and `git_init` is not set: %s"

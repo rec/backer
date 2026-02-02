@@ -5,8 +5,8 @@ from ._database import DatabaseTask
 
 
 class Postgresql(DatabaseTask):
-    COMMAND = 'pg_dump'
-    ALL_COMMAND = 'pg_dumpall'
+    COMMAND = "pg_dump"
+    ALL_COMMAND = "pg_dumpall"
 
     def build_command_line(self):
         if not self.databases:
@@ -14,7 +14,7 @@ class Postgresql(DatabaseTask):
         elif len(self.databases) == 1:
             self.add(self.databases[0])
         else:
-            raise ValueError('postgresql can back one database up, or all')
+            raise ValueError("postgresql can back one database up, or all")
 
         self.add(file=str(self.out_filename))
         super().build_command_line()

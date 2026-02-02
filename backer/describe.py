@@ -3,7 +3,7 @@ import yaml
 
 def defaults(cls):
     desc = describe(cls)
-    return {k: v['default'] for k, v in desc.items()}
+    return {k: v["default"] for k, v in desc.items()}
 
 
 def describe(cls, desc=None):
@@ -14,10 +14,10 @@ def describe(cls, desc=None):
     except AttributeError:
         return desc
 
-    hidden = getattr(cls, '_HIDDEN_FIELDS', ())
+    hidden = getattr(cls, "_HIDDEN_FIELDS", ())
     fields = {k: v for k, v in fields.items() if k not in hidden}
 
-    docs = getattr(cls, '__dataclass_docs__', {})
+    docs = getattr(cls, "__dataclass_docs__", {})
     if isinstance(docs, str):
         docs = yaml.safe_load(docs)
 
@@ -26,10 +26,10 @@ def describe(cls, desc=None):
 
     for name, field in fields.items():
         desc[name] = {
-            'name': name,
-            'type': field.type.__name__,
-            'default': field.default,
-            'doc': docs.get(name, ''),
+            "name": name,
+            "type": field.type.__name__,
+            "default": field.default,
+            "doc": docs.get(name, ""),
         }
 
     return desc

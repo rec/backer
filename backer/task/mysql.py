@@ -4,7 +4,7 @@ from ._database import DatabaseTask
 
 
 class Mysql(DatabaseTask):
-    COMMAND = 'mysqldump'
+    COMMAND = "mysqldump"
 
     def build_command_line(self):
         super().build_command_line()
