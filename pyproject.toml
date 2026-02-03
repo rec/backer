@@ -12,6 +12,7 @@ dependencies = [
     "pyyaml>=6.0,<7",
     "run-subprocess>=0.9.1,<0.10",
     "safe-writer>=0.9.3,<0.10",
+    "safer>=5.1.0",
     "schedule>=1.1.0,<2",
     "watchdog>=2.2.1,<3",
 ]
