@@ -1,6 +1,7 @@
-from . import patch
 from pathlib import Path
 from tempfile import TemporaryDirectory
+
+from . import patch
 
 
 @patch.execute_keep_run

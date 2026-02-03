@@ -1,5 +1,6 @@
-from . import patch
 from gitz.git import GIT, repo
+
+from . import patch
 
 
 @patch.execute_keep_run

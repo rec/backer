@@ -1,8 +1,10 @@
+import time
+
+import yaml
+
 from . import config, signal_handler, stoppable_thread
 from .execute import Execute
 from .task import task_class
-import time
-import yaml
 
 
 class MainThread(stoppable_thread.StoppableThread):

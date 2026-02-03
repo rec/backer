@@ -6,13 +6,14 @@ If file names are provided on the command line, then these are used to
 configure the program, otherwise stdin is read.
 """
 
-from . import describe
-from . import task as _task
-from . import variables
-from pathlib import Path
 import argparse
 import os
+from pathlib import Path
+
 import yaml
+
+from . import describe, variables
+from . import task as _task
 
 STEM = Path("backer")
 SUFFIXES = ".yml", ".yaml", ".json"

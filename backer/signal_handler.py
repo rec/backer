@@ -35,7 +35,7 @@ def run(runner, stopper, stops=STOPS, restarts=RESTARTS, print=print):
 
             running = all(s in restarts for s in signals)
             msg = "restarting" if running else "stopping"
-            print("Received signal %s: %s" % (" ".join(signals), msg))
+            print("Received signal {}: {}".format(" ".join(signals), msg))
             signals.clear()
             if not running:
                 return

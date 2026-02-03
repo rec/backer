@@ -1,10 +1,12 @@
-from backer import execute
-from backer.__main__ import Main
-from tempfile import TemporaryDirectory
-from unittest import mock
 import time
 import unittest
+from tempfile import TemporaryDirectory
+from unittest import mock
+
 import yaml
+
+from backer import execute
+from backer.__main__ import Main
 
 
 class FakeExecuteKeepRun(execute.Execute):

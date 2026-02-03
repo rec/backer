@@ -1,5 +1,6 @@
-from ._task import dataclass, Task
 from pathlib import Path
+
+from ._task import Task, dataclass
 
 
 @dataclass
@@ -38,7 +39,7 @@ class ScheduledCommandTask(Task):
                 flag = flag.replace("_", "-")
                 flag = ("-" if len(flag) == 1 else "--") + flag
                 if value is not True:
-                    flag = "%s=%s" % (flag, value)
+                    flag = f"{flag}={value}"
                 self.add(flag)
 
     __dataclass_docs__ = """

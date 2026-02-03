@@ -1,8 +1,10 @@
-from .stoppable_thread import Stoppable, StoppableThreadList
-from watchdog import observers
+import time
+
 import run_subprocess as rs
 import schedule as _schedule
-import time
+from watchdog import observers
+
+from .stoppable_thread import Stoppable, StoppableThreadList
 
 
 class Execute(StoppableThreadList):

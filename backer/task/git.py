@@ -1,12 +1,13 @@
-from ._task import Task
-from dataclasses import dataclass
-from pathlib import Path
-from queue import Queue, Empty
 import datetime
 import functools
 import os
 import sys
 import time
+from dataclasses import dataclass
+from pathlib import Path
+from queue import Empty, Queue
+
+from ._task import Task
 
 # How long before timing out the service queue?
 QUEUE_TIMEOUT = 1

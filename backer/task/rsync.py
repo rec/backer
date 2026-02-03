@@ -1,5 +1,6 @@
-from ._scheduled import ScheduledCommandTask
 from dataclasses import dataclass
+
+from ._scheduled import ScheduledCommandTask
 
 
 @dataclass

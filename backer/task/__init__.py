@@ -3,7 +3,7 @@ import importlib
 
 def task_class(name):
     if "." not in name:
-        name = "%s.%s" % (__package__, name)
+        name = f"{__package__}.{name}"
 
     mod = importlib.import_module(name)
     r = name.split(".")[-1].lower()

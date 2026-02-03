@@ -1,5 +1,6 @@
-from . import patch
 import yaml
+
+from . import patch
 
 
 @patch.execute

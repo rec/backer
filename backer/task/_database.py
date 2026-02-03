@@ -1,4 +1,4 @@
-from ._scheduled import dataclass, ScheduledCommandTask
+from ._scheduled import ScheduledCommandTask, dataclass
 
 
 @dataclass

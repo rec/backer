@@ -1,5 +1,6 @@
-from backer import variables
 import unittest
+
+from backer import variables
 
 
 class VariablesTest(unittest.TestCase):

@@ -1,7 +1,8 @@
-from backer_doc import __main__
 import functools
 import io
 import unittest
+
+from backer_doc import __main__
 
 
 class TestDescribe(unittest.TestCase):

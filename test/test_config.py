@@ -1,9 +1,8 @@
-from backer import config
-from backer import describe
-from backer import task
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest import TestCase
+
+from backer import config, describe, task
 
 SECTIONS = ("git", "mongodb", "mysql", "postgresql", "rsync")
 TASKS = {s: task.task_class(s) for s in SECTIONS}

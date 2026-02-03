@@ -17,10 +17,11 @@ Docker format:
     ${VAR?err} - throws an exception containing err if VAR is unset
 """
 
-from pathlib import Path
-import dotenv
 import os
 import re
+from pathlib import Path
+
+import dotenv
 
 DOCKER_RE = re.compile(
     r"""
@@ -67,7 +68,7 @@ def _apply(s, env):
     assert len(split) % 6 == 1
     env = os.environ if env is None else env or {}
 
-    for before, name1, name2, colon, sep, arg in zip(*[iter(split)] * 6):
+    for before, name1, name2, colon, sep, arg in zip(*[iter(split)] * 6, strict=True):
         yield before.format(**env or {})
 
         if name1 == "" or name2 == "":
