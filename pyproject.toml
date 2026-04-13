@@ -23,7 +23,7 @@ dev = [
     "flake8==5.0.4",
     "impall>=1.1.1,<2",
     "gitz>=1.4.1,<2",
-    "pytest>=7.2.1,<8",
+    "pytest>=7.2.1,<10",
     "pytest-benchmark>=4.0.0,<5",
     "pyupgrade>=3.21.2",
     "ruff>=0.14.14",
